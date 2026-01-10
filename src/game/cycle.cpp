@@ -121,7 +121,7 @@ void GameScene::VisualCycle(float t) {
 }
 
 const int delayBeforeRestartSeconds = 5;
-float delayBeforeRestart = 9999; // время до рестарта уровня, при активации в delayBeforeRestartSeconds частично останавливает игру
+float delayBeforeRestartCounter = 9999; // время до рестарта уровня, при активации в delayBeforeRestartSeconds частично останавливает игру
 
 void GameScene::Cycle(float t) {
 
@@ -141,13 +141,13 @@ void GameScene::Cycle(float t) {
     healingReload -= t * std::pow(currentVolume / avgVolume, 3) * 1.5;
 
     // если не запущен счётчик ожидания рестарта уровня
-    if (delayBeforeRestartSeconds < delayBeforeRestart) {
+    if (!awaitingRestart) {
 
         snprintf(strFormatBuf, sizeof(strFormatBuf), "%d%%", int(float(currentStfIndex) / float(stf.timeLength) * 100.f));
         txtProgress.setString(strFormatBuf);
 
         if (playerHealth < 0) {
-            delayBeforeRestart = delayBeforeRestartSeconds - 0.1f;
+            delayBeforeRestartCounter = delayBeforeRestartSeconds - 0.1f;
             player.setPosition(999999,999999); // просто спрячем за карту
             awaitingRestart = true;
         }
@@ -160,14 +160,14 @@ void GameScene::Cycle(float t) {
         playerHealth = 0;
         playerShield = 0;
         
-        delayBeforeRestart -= t;
+        delayBeforeRestartCounter -= t;
 
-        if (delayBeforeRestart < 4) {
-            music.setVolume(delayBeforeRestart * 10.f);
+        if (delayBeforeRestartCounter < 4) {
+            music.setVolume(delayBeforeRestartCounter * 10.f);
         }
 
-        if (delayBeforeRestart < 0) {
-            delayBeforeRestart = 999999; // деактивация счётчика
+        if (delayBeforeRestartCounter < 0) {
+            delayBeforeRestartCounter = 999999; // деактивация счётчика
             music.setVolume(100);
             SetupLevel(); // реально рестарт уровня
         }
