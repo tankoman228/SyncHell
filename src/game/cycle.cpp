@@ -59,9 +59,9 @@ void GameScene::FeaturesCycleResolve(float t) {
             float value = stf.spectro[currentStfIndex][feature];
             float delta = abs(value - averages[feature]);
 
-            if (delta > averagesDeltasAbs[feature] * 2.1 / std::pow(currentVolume / 256.f, 4)) {
+            if (delta > averagesDeltasAbs[feature] * 2.3 / std::pow(currentVolume / 256.f, 6)) {
                 FeatureTriggered(value, feature);
-                tension += 1.5 * (currentVolume / 256.f);
+                tension += 1.6 * (currentVolume / 256.f);
             }
             averages[feature] = averages[feature] * 0.85 + value * 0.15;
             averagesDeltasAbs[feature] = averagesDeltasAbs[feature] * 0.85 + delta * 0.15;
@@ -143,8 +143,10 @@ void GameScene::Cycle(float t) {
     // если не запущен счётчик ожидания рестарта уровня
     if (!awaitingRestart) {
 
-        snprintf(strFormatBuf, sizeof(strFormatBuf), "%d%%", int(float(currentStfIndex) / float(stf.timeLength) * 100.f));
-        txtProgress.setString(strFormatBuf);
+        if (currentStfIndex != 0) {
+            snprintf(strFormatBuf, sizeof(strFormatBuf), "%d%%", int(float(currentStfIndex) / float(stf.timeLength) * 100.f) + 1); // а то 99 из-за округлений остаётся
+            txtProgress.setString(strFormatBuf);
+        }
 
         if (playerHealth < 0) {
             delayBeforeRestartCounter = delayBeforeRestartSeconds - 0.1f;

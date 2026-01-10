@@ -182,7 +182,7 @@ struct ProjectileSpiralMove : Projectile
         shape.setPosition(position); 
         shape.setOutlineThickness(3);
 
-        damage = radius;
+        damage = radius / 1.5f;
         
         this->speed = speed;
     }
@@ -192,8 +192,8 @@ struct ProjectileSpiralMove : Projectile
         spiralRadius -= t * 325; // пикселей в секунду
         angleMove += t * angleSpeed;
 
-        if (spiralRadius < 10) {
-            shape.setScale(spiralRadius / 10.f, spiralRadius / 10.f);
+        if (spiralRadius < 30) {
+            shape.setScale(spiralRadius / 30.f, spiralRadius / 30.f);
         }
         if (spiralRadius < 0) {
             lifeTime = 99999999;
