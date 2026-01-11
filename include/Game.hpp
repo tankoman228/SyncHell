@@ -40,6 +40,7 @@ class GameScene
     
     float avgVolume = 0; // от 0 до 255
     float musicDurationSeconds = 0; 
+    float difficulty = 1; // преобразованное уже конструктором до дроби, всегда больше нуля
 
     // Параметры игры (динамические)
     float barrierRadius = barrierRadiusInitial;
@@ -72,7 +73,7 @@ class GameScene
 
 public:
     /* инициализация сцены */
-    GameScene(sf::RenderWindow *window_, std::string level);
+    GameScene(sf::RenderWindow *window_, std::string level, int difficulty_);
     ~GameScene() {
         spectro.FreeMemory();
         stf.FreeMemory();

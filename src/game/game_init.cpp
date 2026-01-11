@@ -35,9 +35,17 @@ void GameScene::SetupLevel() {
 }
 
 /* инициализация сцены */
-GameScene::GameScene(sf::RenderWindow *window_, std::string level)
+GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficulty_)
 {
     this->window = window_;
+    switch (difficulty_)
+    {
+        case 1: difficulty = 0.6; break;
+        case 2: difficulty = 0.8; break;
+        case 3: difficulty = 1; break;
+        case 4: difficulty = 1.2; break;
+        case 5: difficulty = 1.4; break;
+    }
 
     // загрузка музыкального файла
     std::cout << "opening music file\n";

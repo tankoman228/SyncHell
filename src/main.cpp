@@ -6,15 +6,26 @@
 #include <TGUI/Widgets/Group.hpp>
 #include <TGUI/Widgets/Panel.hpp>
 #include <TGUI/Widgets/HorizontalWrap.hpp>
-
+#include <cctype> // Required for std::tolower
 
 namespace fs = std::filesystem;
 
 struct LevelOption {
-    sf::Text control;
     std::string filename;
     std::string author = "?";
     std::string duration = "?";
+    bool isTutorial = false;
+
+    LevelOption() {}
+    LevelOption(
+        std::string filename_, 
+        std::string author_, 
+        bool isTutorial_) {
+
+            // TODO: убрать этот костыль и разделить туториальные от обычных
+            filename = filename_; author = author_; isTutorial = isTutorial_;
+            duration = "Difficulty is always ★★";
+        }
 };
 
 bool endsWith(const std::string& fullString, const std::string& ending) {
@@ -53,23 +64,19 @@ int main()
     sf::RenderWindow window(sf::VideoMode(desktopMode.width, desktopMode.height), 
                            "SyncHell");
 
-    GameScene* scene = nullptr;
-
-    // Для измерения времени
+    // FPS
     sf::Clock clock;
     float deltaTime = 0.0f;
-    
-    // Настройка FPS
-    window.setFramerateLimit(75); // SFML сам ограничит частоту
+    window.setFramerateLimit(75); 
 
+    // Загрузка списка уровней
+    GameScene* scene = nullptr; // если нуль, то мы в меню
     std::vector<LevelOption> Levels;
-    sf::Font font;
-    font.loadFromFile("assets/sansation.ttf");
-    int selectedLevelIndex = 0;
-    sf::Text hint;
-    hint.setFont(font);
-    hint.setPosition(10,20);
-    hint.setString("ESC: Menu\nW/S Select Level\nEnter: Play");
+
+    Levels.push_back(LevelOption("tutorial/Investigations.ogg", "Kevin MacLeod (CC BY 3.0)", true));
+    Levels.push_back(LevelOption("tutorial/Jingle-Bells-3.ogg", "Kevin MacLeod (CC BY 3.0)", true));
+    Levels.push_back(LevelOption("tutorial/Run-Amok.ogg",       "Kevin MacLeod (CC BY 3.0)", true));
+    Levels.push_back(LevelOption("tutorial/We-Wish-You.ogg",    "Kevin MacLeod (CC BY 3.0)", true));
 
     try {
         int i = 0;
@@ -85,11 +92,7 @@ int main()
                     endsWith(filename, ".flac")) 
                 {
                     LevelOption option;
-                    option.control = sf::Text();
-                    option.control.setFont(font);
-                    option.control.setFillColor(sf::Color::White);
-                    
-                    option.control.setString(filename);
+
                     option.filename = filename;
 
                     Levels.push_back(option);
@@ -108,12 +111,14 @@ int main()
             << "path2: " << e.path2() << std::endl;
     }
 
-
     // !Файлы просканированы, инициализируем сам GUI!
+
+    static int difficulty = 3; // по умолчанию 3, если трогать константу, то править код нижже
 
     tgui::Gui gui{window};  // Создаем GUI, привязанный к окну
     auto scrollPanel = tgui::ScrollablePanel::create();
-    scrollPanel->setSize("80%", "99%");
+    scrollPanel->setSize("80%", "100% - 50");
+    scrollPanel->setPosition(5, 50);
 
     auto scrollbarRenderer = scrollPanel->getRenderer();
     auto scrollbarData = tgui::RendererData::create();
@@ -122,23 +127,21 @@ int main()
     scrollbarData->propertyValuePairs["TrackColor"] = tgui::Color::Black;
     scrollbarData->propertyValuePairs["ArrowBackgroundColor"] = tgui::Color::Black;
     scrollbarData->propertyValuePairs["ArrowColor"] = tgui::Color(0,50,100);
-
     scrollbarRenderer->setProperty("Scrollbar", scrollbarData);
-
 
     // Рассчитываем общую высоту всех карточек
     const float CARD_HEIGHT = 110;
-    float totalHeight = Levels.size() * CARD_HEIGHT;
 
     // Создаем контейнер для карточек
-    auto cardContainer =  tgui::VerticalLayout::create();
-    cardContainer->setSize("100%", totalHeight); // Начальная высота 50
+    auto cardContainer =  tgui::Panel::create();
+    cardContainer->setSize("100%", Levels.size() * CARD_HEIGHT);
+    cardContainer->getRenderer()->setBackgroundColor(tgui::Color::Black);
 
     // Функция создания карточки
     auto createLevelCard = [&](const LevelOption& level, int index) {
         // Панель как карточка
         auto card = tgui::Panel::create();
-        card->setSize("95%", CARD_HEIGHT); 
+        card->setSize("100%", CARD_HEIGHT); 
         
         // Градиентный фон
         card->getRenderer()->setBackgroundColor(tgui::Color(30, 33, 40));
@@ -175,8 +178,7 @@ int main()
         playButton->setPosition("100% - 180", 10);
         playButton->setTextSize(38);
         playButton->onClick([&, index]() {
-            selectedLevelIndex = index;
-            scene = new GameScene(&window, Levels[index].filename);
+            scene = new GameScene(&window, Levels[index].filename, Levels[index].isTutorial ? 2 : difficulty);
         });
         playButton->getRenderer()->setBackgroundColor(tgui::Color(70, 130, 180));
         playButton->getRenderer()->setBackgroundColorHover(tgui::Color(100, 149, 237));
@@ -199,6 +201,8 @@ int main()
         levelCard = createLevelCardWithBottomSpacing(levelCard, 5);
 
         levelCard->setSize("100%", "100%");
+        cardWrapper->setPosition(0, CARD_HEIGHT * i);
+
         cardWrapper->add(levelCard);
         
         cardContainer->add(cardWrapper);
@@ -207,6 +211,103 @@ int main()
     scrollPanel->add(cardContainer);
     gui.add(scrollPanel);
 
+    // Создаем текстовое поле для поиска
+    auto searchBox = tgui::EditBox::create();
+    searchBox->setPosition(10, 10);
+    searchBox->setSize("80% - 10", 30);
+    searchBox->setDefaultText("Search levels...");
+    searchBox->getRenderer()->setBackgroundColor(tgui::Color::Black);
+    searchBox->getRenderer()->setTextColor(tgui::Color(200,200,200));
+
+    // Добавляем обработчик ввода в текстовое поле
+    searchBox->onTextChange([searchBox, cardContainer, Levels, CARD_HEIGHT]() {
+        std::string searchText = searchBox->getText().toStdString();
+        std::vector<std::pair<tgui::Panel::Ptr, bool>> widgetStates;
+
+        // Проходим по всем оберткам карточек
+        for (size_t i = 0; i < cardContainer->getWidgets().size(); i++) {
+            auto wrapper = cardContainer->getWidgets()[i];
+            auto panel = std::dynamic_pointer_cast<tgui::Panel>(wrapper);
+            if (panel && !panel->getWidgets().empty()) {
+                // Получаем уровень по индексу
+                if (i < Levels.size()) {
+                    const auto level = Levels[i];
+
+                    // Проверяем совпадение
+                    bool matches = searchText.empty() ||
+                                level.filename.find(searchText) != std::string::npos ||
+                                level.author.find(searchText) != std::string::npos;
+                    
+                    widgetStates.push_back({panel, matches});
+                }
+            }
+        }
+
+        // Затем применяем изменения
+        int matchesCount = 0;
+        for (const auto& [panel, matches] : widgetStates) {
+            panel->setPosition(0, matches ? CARD_HEIGHT * matchesCount : (Levels.size() - 1) * CARD_HEIGHT);
+            if (matches) {               
+                matchesCount++;
+            }
+        }
+    });
+
+    gui.add(searchBox);
+
+    // Создаем ползунок сложности справа внизу
+    auto difficultySlider = tgui::Slider::create(1, 5);
+    difficultySlider->setPosition("80% + 5", "100% - 80");
+    difficultySlider->setSize("20% - 20", 20);
+    difficultySlider->setValue(3); // Значение по умолчанию
+    difficultySlider->setStep(1); // Только целые значения
+    difficultySlider->getRenderer()->setTrackColor(tgui::Color(0,150,230));
+    difficultySlider->getRenderer()->setThumbColor(tgui::Color(0,150,230));
+
+    // Создаем Label для отображения текущей сложности
+    auto difficultyLabel = tgui::Label::create("Difficulty: ★★★");
+    difficultyLabel->setPosition("80% + 5", "100% - 50");
+    difficultyLabel->setTextSize(24);
+    difficultyLabel->getRenderer()->setTextColor(tgui::Color(200,200,200));
+
+    // Обработчик изменения значения ползунка
+    difficultySlider->onValueChange([difficultyLabel](float value) {
+        difficulty = static_cast<int>(value);
+        std::string text = "Difficulty: ";
+        for (int i = 0; i < difficulty; i++) {
+            text += "★";
+        }
+
+        difficultyLabel->setText(text);
+    });
+
+    gui.add(difficultyLabel);
+    gui.add(difficultySlider);
+
+    // Создаем кнопку About чуть выше регулятора сложности
+    auto aboutButton = tgui::Button::create("About / Copyright");
+    aboutButton->setPosition("80% + 5", 10);
+    aboutButton->getRenderer()->setBackgroundColor(tgui::Color(10,10,10));
+    aboutButton->getRenderer()->setTextColor(tgui::Color(200,200,200));
+    aboutButton->setSize("20% - 15", 40);
+    aboutButton->onClick([]() {
+
+        std::string filePath = "README.md";
+        #ifdef _WIN32
+            // Windows
+            ShellExecuteA(NULL, "open", filePath.c_str(), NULL, NULL, SW_SHOWNORMAL);
+        #elif __APPLE__
+            // macOS
+            std::string command = "open \"" + filePath + "\"";
+            system(command.c_str());
+        #else
+            // Linux
+            std::string command = "xdg-open \"" + filePath + "\"";
+            system(command.c_str());
+        #endif
+    });
+
+    gui.add(aboutButton);
 
     while (window.isOpen())
     {
@@ -219,7 +320,7 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
 
-            gui.handleEvent(event);
+            if (scene == nullptr) gui.handleEvent(event);
         }
         
         // Обновление и отрисовка
@@ -234,34 +335,7 @@ int main()
             }
         }
         else {
-
-            //window.draw(hint);
-
-
             gui.draw();  // Отрисовываем GUI поверх всего
-
-            /*
-            for (int i = 0; i < Levels.size(); i++) {    
-                Levels[i].control.setPosition(i == selectedLevelIndex ? 100 : 50, 150 + i * 30);
-                window.draw(Levels[i].control);
-            }
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-                selectedLevelIndex--;
-                if (selectedLevelIndex < 0) selectedLevelIndex = Levels.size() - 1;
-
-                while (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {}
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-                selectedLevelIndex++;
-                if (selectedLevelIndex >= Levels.size()) selectedLevelIndex = 0;
-
-                while (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {}
-            }
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && Levels.size() > 0) {
-                scene = new GameScene(&window, Levels[selectedLevelIndex].filename);
-            }*/
         }
 
         window.display();

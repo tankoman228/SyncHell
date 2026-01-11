@@ -9,6 +9,7 @@ void GameScene::ProjectilesCycle(float t) {
     {
         if (Projectiles[i]->lifeTime > PROJECTILES_LIFE_TIME)
         {
+            delete Projectiles[i]; 
             Projectiles.erase(Projectiles.begin() + i);
         }
         else if (Projectiles[i]->isCollidable && HasCollision(player, Projectiles[i]->shape))
@@ -29,6 +30,7 @@ void GameScene::ProjectilesCycle(float t) {
                 Projectiles.push_back(new ProjectileAura(player, 255, 10, 10, 0.1f));
             }
 
+            delete Projectiles[i]; 
             Projectiles.erase(Projectiles.begin() + i);
         }
         else if (Projectiles[i]->lifeTime < 0.3f) {
@@ -59,7 +61,8 @@ void GameScene::FeaturesCycleResolve(float t) {
             float value = stf.spectro[currentStfIndex][feature];
             float delta = abs(value - averages[feature]);
 
-            if (delta > averagesDeltasAbs[feature] * 2.3 / std::pow(currentVolume / 256.f, 6)) {
+            // перепад больше обычного, порог снижается с ростом громкости и сложностью
+            if (delta > averagesDeltasAbs[feature] * 2.3 / std::pow(currentVolume / 256.f, 6) / difficulty) {
                 FeatureTriggered(value, feature);
                 tension += 1.6 * (currentVolume / 256.f);
             }
