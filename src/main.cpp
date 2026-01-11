@@ -80,7 +80,7 @@ int main()
 
     try {
         int i = 0;
-        for (const auto& entry : fs::directory_iterator("levels", fs::directory_options::skip_permission_denied)) {
+        for (const auto& entry : fs::directory_iterator(fs::current_path() / "levels", fs::directory_options::skip_permission_denied)) {
             try {
                 if (entry.is_directory()) continue;
 

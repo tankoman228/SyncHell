@@ -7,3 +7,6 @@ levels/*.wav
 levels/*.flac
 
 .cache
+
+SyncHell-x86_64.AppImage
+SyncHell.AppDir

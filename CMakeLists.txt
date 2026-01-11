@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Найти SFML
 find_package(SFML 2.5 COMPONENTS graphics window system audio REQUIRED)
+set(SFML_STATIC_LIBRARIES TRUE)
 
 # Найти libsndfile и FFTW
 find_package(PkgConfig REQUIRED)

@@ -1,5 +1,7 @@
 #include <Game.hpp>
 
+namespace fs = std::filesystem;
+
 // инициализация при начале и перерождении
 void GameScene::SetupLevel() {
 
@@ -50,7 +52,7 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     // загрузка музыкального файла
     std::cout << "opening music file\n";
     LoadFromFile(level);
-    music.openFromFile("levels/" + level);
+    music.openFromFile(fs::current_path() / ("levels/" + level));
 
     // Далее спрайты и т.п.
     sf::Vector2u windowSize = window->getSize();
@@ -116,8 +118,8 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
 void GameScene::LoadFromFile(std::string level) {
 
     // путь для кэш-файла
-    std::filesystem::create_directory(".cache");
-    std::string cache_path = ".cache/" + level + ".stf";
+    std::filesystem::create_directory(fs::current_path() / ".cache");
+    std::string cache_path = fs::current_path() / ".cache/" / (level + ".stf");
 
     // Пробуем загрузить из кэша
     bool loaded_from_cache = false;
@@ -170,7 +172,7 @@ void GameScene::LoadFromFile(std::string level) {
     // Если не удалось загрузить из кэша, вычисляем
     if (!loaded_from_cache) {
         std::cout << "Computing spectrogram...\n";
-        spectro = Spectro::getSpectroFromOgg("levels/" + level, spectroAccuracy, spectroHeight);
+        spectro = Spectro::getSpectroFromOgg(fs::current_path() / ("levels/" + level), spectroAccuracy, spectroHeight);
         
         std::cout << "Computing STF (this may take a while)...\n";
         stf = STF::SpectroToStf(spectro, spectroFramesInStfFrame);

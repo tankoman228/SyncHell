@@ -66,7 +66,7 @@ namespace STF {
 
 
 
-        //        kernel     
+        // kernel     
         std::ifstream inputFile("assets/stf.cl", std::ios::binary);
         if (!inputFile.is_open()) {
             std::cerr << "Failed to open kernel file CTF.cl!\n";
