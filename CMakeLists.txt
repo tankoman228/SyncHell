@@ -44,6 +44,9 @@ if(OpenMP_FOUND)
     message(STATUS "OpenMP поддержка включена")
 endif()
 
+# GUI biblioteka
+find_package(TGUI REQUIRED)
+
 # Подключить библиотеки
 target_link_libraries(${PROJECT_NAME}
     sfml-graphics
@@ -51,6 +54,7 @@ target_link_libraries(${PROJECT_NAME}
     sfml-system
     sfml-audio
     OpenMP::OpenMP_CXX
+    tgui
     ${SNDFILE_LIBRARIES}
     ${FFTW3F_LIBRARIES}
     ${OpenCL_LIBRARIES}     # Добавить библиотеки OpenCL
