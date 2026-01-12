@@ -1,9 +1,9 @@
-п»ї# Р’Р•Р РЎРРЇ Р”Р›РЇ Р’РРќР”Р«
+# ВЕРСИЯ ДЛЯ ВИНДЫ
 
 cmake_minimum_required(VERSION 3.15)
 project(SyncHell)
 
-# РќР°СЃС‚СЂРѕР№РєР° РґР»СЏ Windows
+# Настройка для Windows
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -15,7 +15,7 @@ list(APPEND CMAKE_PREFIX_PATH
     "${CMAKE_SOURCE_DIR}/winlibs/OpenCL"
 )
 
-# РќР°Р№С‚Рё РїР°РєРµС‚С‹
+# Найти пакеты
 
 find_package(SFML COMPONENTS graphics window system audio CONFIG REQUIRED)
 find_package(tgui CONFIG REQUIRED)
@@ -23,10 +23,10 @@ find_package(OpenMP REQUIRED)
 find_package(OpenCL REQUIRED)
 find_package(SndFile REQUIRED)
 
-# Р”РѕР±Р°РІРёС‚СЊ РёСЃС…РѕРґРЅРёРєРё РёР· РѕСЃРЅРѕРІРЅРѕРіРѕ CMakeLists
+# Добавить исходники из основного CMakeLists
 # add_subdirectory(src)
 
-# РР»Рё СЏРІРЅРѕ СѓРєР°Р·Р°С‚СЊ РёСЃС…РѕРґРЅРёРєРё:
+# Или явно указать исходники:
 file(GLOB_RECURSE SOURCES 
     "src/*.cpp"
     "src/*/*.cpp"
@@ -43,7 +43,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-# Р›РёРЅРєРѕРІРєР° РґР»СЏ Windows
+# Линковка для Windows
 target_link_libraries(${PROJECT_NAME} PRIVATE
     sfml-graphics
     sfml-window
@@ -54,23 +54,23 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     SndFile::sndfile
     "${CMAKE_SOURCE_DIR}/winlibs/FFTW3f"
     OpenCL::OpenCL
-    # Windows РЅРµ С‚СЂРµР±СѓРµС‚ СЏРІРЅРѕР№ СЃСЃС‹Р»РєРё РЅР° m (math)
+    # Windows не требует явной ссылки на m (math)
 )
 # find_package(FFTW3f REQUIRED)
 
-# РќР°СЃС‚СЂРѕР№РєРё РґР»СЏ Windows
+# Настройки для Windows
 if(WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE 
         _USE_MATH_DEFINES
-        NOMINMAX  # РћС‚РєР»СЋС‡РёС‚СЊ min/max РјР°РєСЂРѕСЃС‹ Windows
+        NOMINMAX  # Отключить min/max макросы Windows
     )
     
-    # РљРѕРїРёСЂРѕРІР°С‚СЊ DLL Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РІ РІС‹С…РѕРґРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ
+    # Копировать DLL зависимости в выходную директорию
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:sfml-graphics>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:sfml-window>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
-        # Р”РѕР±Р°РІСЊС‚Рµ РѕСЃС‚Р°Р»СЊРЅС‹Рµ DLL РїРѕ РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё
+        # Добавьте остальные DLL по необходимости
     )
 endif()

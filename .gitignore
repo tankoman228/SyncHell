@@ -6,6 +6,9 @@ levels/*.ogg
 levels/*.wav
 levels/*.flac
 
+# они слишком жирные, не влазят в репозиторий
+winlibs/*
+
 .cache
 
 SyncHell-x86_64.AppImage
