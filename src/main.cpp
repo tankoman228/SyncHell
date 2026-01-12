@@ -2,7 +2,8 @@
 #include <Game.hpp>
 #include <filesystem>
 #include <TGUI/TGUI.hpp>
-#include <TGUI/Backend/SFML-Graphics.hpp>
+#include <TGUI/Backend.hpp>
+
 #include <TGUI/Widgets/Group.hpp>
 #include <TGUI/Widgets/Panel.hpp>
 #include <TGUI/Widgets/HorizontalWrap.hpp>
@@ -295,7 +296,7 @@ int main()
         std::string filePath = "README.md";
         #ifdef _WIN32
             // Windows
-            ShellExecuteA(NULL, "open", filePath.c_str(), NULL, NULL, SW_SHOWNORMAL);
+            //ShellExecuteA(NULL, "open", filePath.c_str(), NULL, NULL, SW_SHOWNORMAL);
         #elif __APPLE__
             // macOS
             std::string command = "open \"" + filePath + "\"";

@@ -1,70 +1,76 @@
-cmake_minimum_required(VERSION 3.10)
+﻿# ВЕРСИЯ ДЛЯ ВИНДЫ
+
+cmake_minimum_required(VERSION 3.15)
 project(SyncHell)
 
+# Настройка для Windows
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Найти SFML
-find_package(SFML 2.5 COMPONENTS graphics window system audio REQUIRED)
-set(SFML_STATIC_LIBRARIES TRUE)
+list(APPEND CMAKE_PREFIX_PATH 
+    "${CMAKE_SOURCE_DIR}/winlibs/SFML"
+    "${CMAKE_SOURCE_DIR}/winlibs/TGUI"
+    "${CMAKE_SOURCE_DIR}/winlibs/SndFile"
+    "${CMAKE_SOURCE_DIR}/winlibs/FFTW3f"
+    "${CMAKE_SOURCE_DIR}/winlibs/OpenCL"
+)
 
-# Найти libsndfile и FFTW
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(SNDFILE REQUIRED sndfile)
-pkg_check_modules(FFTW3F REQUIRED fftw3f)
+# Найти пакеты
 
-# Найти OpenCL
-find_package(OpenCL REQUIRED)
+find_package(SFML COMPONENTS graphics window system audio CONFIG REQUIRED)
+find_package(tgui CONFIG REQUIRED)
 find_package(OpenMP REQUIRED)
+find_package(OpenCL REQUIRED)
+find_package(SndFile REQUIRED)
 
-# Исходные файлы, получить список можно скриптом src/scripts/getSources.sh, выполнять в корне проекта: sh src/scripts/getSources.sh
-set(SOURCES
-    src/analysis/Spectro.cpp
-    src/analysis/STF.cpp
-    src/analysis/STFGram.cpp
-    src/collide.cpp
-    src/game/cycle.cpp
-    src/game/game_control.cpp
-    src/game/game_init.cpp
-    src/game/projectile_spawn.cpp
-    src/main.cpp
+# Добавить исходники из основного CMakeLists
+# add_subdirectory(src)
+
+# Или явно указать исходники:
+file(GLOB_RECURSE SOURCES 
+    "src/*.cpp"
+    "src/*/*.cpp"
 )
 
-# Заголовочные файлы
-include_directories(
+file(GLOB_RECURSE HEADERS
+    "include/*.hpp"
+    "include/*/*.hpp"
+)
+
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+
+target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${SNDFILE_INCLUDE_DIRS}
-    ${FFTW3F_INCLUDE_DIRS}
-    ${OpenCL_INCLUDE_DIRS}  # Добавить пути к заголовкам OpenCL
 )
 
-# Создать исполняемый файл
-add_executable(${PROJECT_NAME} ${SOURCES})
-
-# Привязываем OpenMP к цели
-if(OpenMP_FOUND)
-    message(STATUS "OpenMP поддержка включена")
-endif()
-
-# GUI biblioteka
-find_package(TGUI REQUIRED)
-
-# Подключить библиотеки
-target_link_libraries(${PROJECT_NAME}
+# Линковка для Windows
+target_link_libraries(${PROJECT_NAME} PRIVATE
     sfml-graphics
     sfml-window
     sfml-system
     sfml-audio
-    OpenMP::OpenMP_CXX
     tgui
-    ${SNDFILE_LIBRARIES}
-    ${FFTW3F_LIBRARIES}
-    ${OpenCL_LIBRARIES}     # Добавить библиотеки OpenCL
-    m  # математическая библиотека для Linux
+    OpenMP::OpenMP_CXX
+    SndFile::sndfile
+    "${CMAKE_SOURCE_DIR}/winlibs/FFTW3f"
+    OpenCL::OpenCL
+    # Windows не требует явной ссылки на m (math)
 )
+# find_package(FFTW3f REQUIRED)
 
-# Копирование папки assets в директорию с исполняемым файлом при сборке
-add_custom_command(TARGET SyncHell POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    "${CMAKE_CURRENT_SOURCE_DIR}/assets"
-    "$<TARGET_FILE_DIR:SyncHell>/assets"
-)
+# Настройки для Windows
+if(WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE 
+        _USE_MATH_DEFINES
+        NOMINMAX  # Отключить min/max макросы Windows
+    )
+    
+    # Копировать DLL зависимости в выходную директорию
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:sfml-graphics>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:sfml-window>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+        # Добавьте остальные DLL по необходимости
+    )
+endif()

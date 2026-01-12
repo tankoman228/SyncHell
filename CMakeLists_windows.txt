@@ -1,0 +1,76 @@
+# ВЕРСИЯ ДЛЯ ВИНДЫ
+
+cmake_minimum_required(VERSION 3.15)
+project(SyncHell)
+
+# Настройка для Windows
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+list(APPEND CMAKE_PREFIX_PATH 
+    "${CMAKE_SOURCE_DIR}/winlibs/SFML"
+    "${CMAKE_SOURCE_DIR}/winlibs/TGUI"
+    "${CMAKE_SOURCE_DIR}/winlibs/SndFile"
+    "${CMAKE_SOURCE_DIR}/winlibs/FFTW3f"
+    "${CMAKE_SOURCE_DIR}/winlibs/OpenCL"
+)
+
+# Найти пакеты
+
+find_package(SFML COMPONENTS graphics window system audio CONFIG REQUIRED)
+find_package(tgui CONFIG REQUIRED)
+find_package(OpenMP REQUIRED)
+find_package(OpenCL REQUIRED)
+find_package(SndFile REQUIRED)
+
+# Добавить исходники из основного CMakeLists
+# add_subdirectory(src)
+
+# Или явно указать исходники:
+file(GLOB_RECURSE SOURCES 
+    "src/*.cpp"
+    "src/*/*.cpp"
+)
+
+file(GLOB_RECURSE HEADERS
+    "include/*.hpp"
+    "include/*/*.hpp"
+)
+
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+# Линковка для Windows
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    sfml-graphics
+    sfml-window
+    sfml-system
+    sfml-audio
+    tgui
+    OpenMP::OpenMP_CXX
+    SndFile::sndfile
+    "${CMAKE_SOURCE_DIR}/winlibs/FFTW3f"
+    OpenCL::OpenCL
+    # Windows не требует явной ссылки на m (math)
+)
+# find_package(FFTW3f REQUIRED)
+
+# Настройки для Windows
+if(WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE 
+        _USE_MATH_DEFINES
+        NOMINMAX  # Отключить min/max макросы Windows
+    )
+    
+    # Копировать DLL зависимости в выходную директорию
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:sfml-graphics>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:sfml-window>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+        # Добавьте остальные DLL по необходимости
+    )
+endif()
