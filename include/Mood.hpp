@@ -24,7 +24,8 @@ namespace MoodVariants {
 
 	// 67 классов
 
-	class BlueSky EXT_MOOD
+	class BlueSky : public Mood {};
+	//class BlueSky EXT_MOOD
 	class NightSky : public Mood {};
 	class DaySky : public Mood {};
 	class SnowSky : public Mood {};
