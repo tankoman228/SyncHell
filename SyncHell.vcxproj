@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\analysis\EIF.cpp" />
     <ClCompile Include="src\analysis\Spectro.cpp" />
     <ClCompile Include="src\analysis\STF.cpp" />
     <ClCompile Include="src\analysis\STFGram.cpp" />
@@ -35,6 +36,7 @@
     <ClInclude Include="include\Game.hpp" />
     <ClInclude Include="include\Mood.hpp" />
     <ClInclude Include="include\Projectile.hpp" />
+    <ClInclude Include="include\EIF.hpp" />
     <ClInclude Include="include\Spectro.hpp" />
     <ClInclude Include="include\STF.hpp" />
     <ClInclude Include="include\STFGram.hpp" />
