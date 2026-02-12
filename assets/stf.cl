@@ -60,7 +60,7 @@ __kernel void process(
                 float delta = prevValue - inp;
                 if (delta * delta > 20) {
 
-                    ribsV++; // изменился рисунок вертикально, т.е. шла частота слева направо и изменилась
+                    ribsV += 1; // изменился рисунок вертикально, т.е. шла частота слева направо и изменилась
 
                     if (delta > 0) {
                         delta_positive += delta;
@@ -122,7 +122,7 @@ __kernel void process(
                 
                 float delta = prevValue - inp;
                 if (delta * delta > 20) {
-                    ribsH++; // ребро горизонтально, на участке времени в зависимости от частоты... 
+                    ribsH += 1; // ребро горизонтально, на участке времени в зависимости от частоты... 
                 }
 
                 prevValue = inp;

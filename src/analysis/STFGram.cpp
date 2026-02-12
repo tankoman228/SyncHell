@@ -27,7 +27,7 @@ namespace STF {
 
         for (int feature = 0; feature < 256; feature++) {
 
-            std::cout << feature << " is between " << featureMax[feature] << " " << featureMin[feature] <<  "\n";
+            //std::cout << feature << " is between " << featureMax[feature] << " " << featureMin[feature] <<  "\n";
 
             for (int t = 0; t < rawSTF.timeLength; t++) {
 

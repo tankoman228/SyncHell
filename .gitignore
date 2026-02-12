@@ -9,6 +9,14 @@ levels/*.flac
 # они слишком жирные, не влазят в репозиторий
 winlibs/*
 
+# Visual Studio
+.vs/*
+.vs
+x64/*
+x64
+SyncHell/*
+
+
 .cache
 
 SyncHell-x86_64.AppImage

@@ -77,6 +77,10 @@ namespace STF {
         std::string fileContent((std::istreambuf_iterator<char>(inputFile)),
             std::istreambuf_iterator<char>());
         inputFile.close();
+
+        fileContent.erase(std::remove_if(fileContent.begin(), fileContent.end(),
+            [](unsigned char c) { return c > 127; }), fileContent.end());
+
         if (fileContent.empty()) {
             std::cerr << "Kernel file is empty!\n";
             clReleaseCommandQueue(queue);

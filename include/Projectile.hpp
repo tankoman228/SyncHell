@@ -5,6 +5,8 @@
 #include <iostream>
 #include <cmath>
 
+#define M_PI 3.141592
+
 struct Projectile
 {
     sf::ConvexShape shape;
