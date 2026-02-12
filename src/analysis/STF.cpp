@@ -211,13 +211,13 @@ namespace STF {
             }
         }
         for (int feature = 0; feature < 256; feature++) {
-            if (featureMax[feature] < -9999) {
-                featureMax[feature] = 1;
-            }
-        }
-        for (int feature = 0; feature < 256; feature++) {
+
             for (int t = 0; t < result.timeLength; t++) {               
-                result.spectro[t][feature] = result.spectro[t][feature] / featureMax[feature] * 255.f;
+
+                if (featureMax[feature] < -9999) {
+                    result.spectro[t][feature] = 128;
+                }
+                else result.spectro[t][feature] = result.spectro[t][feature] / featureMax[feature] * 255.f;
             }
         }
 

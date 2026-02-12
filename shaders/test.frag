@@ -56,7 +56,7 @@ void main() {
         finalColor.g = max(current.g, g);
     }
 
-    if (uv.y > flameH + 1.5) {
+    if (uv.y > flameH + 1.0) {
        if (finalColor.r > 0.02) { finalColor.r -= 0.02; }
        if (finalColor.g > 0.02) { finalColor.g -= 0.02; }
     }
