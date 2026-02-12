@@ -21,6 +21,7 @@ float PendulumEnviroment[256];   // необработанное значение маятников
 // веса для рецепторов
 float PendulumStrengths[256];
 float DeepEnviromentHardness[256 * 32];
+float DeepEnviromentResistance[256 * 32];
 
 /// <summary>
 /// В переменные OUT выведет энергию с рецепторов
@@ -29,8 +30,31 @@ float DeepEnviromentHardness[256 * 32];
 /// 44.1 КГЦ, т.е. секунда звука это 44 100 элементов массива
 /// или 44 100 т.е. 176 КБ на секунду в ОЗУ
 /// </summary>
-void EIF::Cycle(std::vector<float> waveRaw, int waveIndexEnd, int& waveIndex) {
+void EIF::Cycle(std::vector<float> waveRaw, int waveIndexEnd, int& waveIndex, float deltaTimeSec) {
 
+    // TODO: Внутренний рецептор (код калька с C# неизвестно как работавшая)
+    for (int& i = waveIndex; i < waveIndexEnd; i++)
+    {
+        DeepEnviroment[0] = waveRaw[i]; // волна входит в среду
+
+        for (int j = std::min(256 * 32 - 2, i + 1); j >= 0; j--)
+        {
+            // Вправо идёт, меняясь согласно жёсткости и сопротивлению среды
+            DeepEnviroment[j + 1] =
+                (DeepEnviroment[j] * DeepEnviromentHardness[j] / DeepEnviromentHardness[j + 1] 
+                    + DeepEnviroment[j + 1] * DeepEnviromentResistance[j])
+
+                / (DeepEnviromentResistance[j] + 1)
+                * 0.999f;
+
+            OUT_Deep[j] += std::abs(DeepEnviroment[j + 1]); // 
+        }
+    }
+
+    for (int i = 0; i < 256; i++) {
+        OUT_Pendulum[i] *= 1;
+        OUT_Deep[i] *= 1; // TODO: затухание
+    }
 }
 
 /// <summary>

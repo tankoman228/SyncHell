@@ -27,7 +27,7 @@ namespace EIF {
 	/// 44.1 КГЦ, т.е. секунда звука это 44 100 элементов массива
 	/// или 44 100 т.е. 176 КБ на секунду в ОЗУ
 	/// </summary>
-	void Cycle(std::vector<float> waveRaw, int waveIndexEnd, int& waveIndex);
+	void Cycle(std::vector<float> waveRaw, int waveIndexEnd, int& waveIndex, float deltaTimeSec);
 
 	/// <summary>
 	/// Инициализация всех весов для рецепторов
