@@ -4,6 +4,8 @@ void GameScene::FeatureTriggered(float value, int feature)
 {
     // диапазон    описание                                         значения в песне Beast In Black
 
+    // ДЛЯ СЕБЯ, Я ИХ УЖЕ НОРМАЛИЗОВАЛ ОТ 0 ДО 255!
+
     // от  0 до 19 энергия (громкость?)                             0-1
     // от 20 до 39 разброс                                          0-240
     // от 40 до 59 дельта усиления                                  0-3900
@@ -41,7 +43,7 @@ void GameScene::FeatureTriggered(float value, int feature)
         // Направление от центра
         sf::Vector2f direction = barrierCenter - position;
         float length = sqrt(direction.x * direction.x + direction.y * direction.y);
-        sf::Vector2f velocity = (direction / length) * speedAtack * -10.f * (value + 1.f);
+        sf::Vector2f velocity = (direction / length) * speedAtack * -10.f * (value + 10) / 255.f;
 
         auto p = new ProjectileTriangle(position, velocity, sf::Color::White, angleAtack + 90);
         p->shape.setScale(0.3f, 0.3f);

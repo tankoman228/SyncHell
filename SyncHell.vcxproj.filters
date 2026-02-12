@@ -30,7 +30,7 @@
     <ClCompile Include="src\analysis\STFGram.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\game\cycle.cpp">
+    <ClCompile Include="src\game\game_cycle.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\game\game_control.cpp">
@@ -65,10 +65,14 @@
     <ClInclude Include="include\STFGram.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="include\Background.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\scripts\getSources.sh" />
     <None Include="assets\stf.cl" />
+    <None Include="shaders\test.frag" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="assets\sansation.ttf" />

@@ -5,6 +5,8 @@ namespace fs = std::filesystem;
 // инициализация при начале и перерождении
 void GameScene::SetupLevel() {
 
+    std::cout << "setup started\n";
+
     // Сброс динамических значений уровня
     playerHealth = 255;
     playerShield = 64;
@@ -23,7 +25,7 @@ void GameScene::SetupLevel() {
     player.setPosition(barrierCenter);
 
     barrier = sf::CircleShape(barrierRadius);
-    barrier.setFillColor(sf::Color::Transparent);
+    barrier.setFillColor(sf::Color(0,0,0,150));
     barrier.setOutlineColor(sf::Color(255,80,80));
     barrier.setOutlineThickness(2.0f);
     barrier.setOrigin(barrierRadius, barrierRadius); // Центрируем
@@ -34,6 +36,8 @@ void GameScene::SetupLevel() {
 
     musicDurationSeconds = music.getDuration().asSeconds();
     music.play();
+
+    std::cout << "setup ended\n";
 }
 
 /* инициализация сцены */
@@ -113,6 +117,10 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     shielbar.setPosition(barrierCenter);
     shielbar.move(-300, barrierRadius + 150);
     shielbar.setFillColor(sf::Color(0, 255, 255));
+
+    background.setSize(sf::Vector2f(1920, 1080));
+    shader.loadFromFile("shaders/test.frag", sf::Shader::Fragment);
+    shader.setUniform("resolution", sf::Vector2f(window->getSize()));
 }
 
 void GameScene::LoadFromFile(std::string level) {

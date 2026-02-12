@@ -23,13 +23,14 @@
     <ClCompile Include="src\analysis\STF.cpp" />
     <ClCompile Include="src\analysis\STFGram.cpp" />
     <ClCompile Include="src\collide.cpp" />
-    <ClCompile Include="src\game\cycle.cpp" />
+    <ClCompile Include="src\game\game_cycle.cpp" />
     <ClCompile Include="src\game\game_control.cpp" />
     <ClCompile Include="src\game\game_init.cpp" />
     <ClCompile Include="src\game\projectile_spawn.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Background.hpp" />
     <ClInclude Include="include\Collide.hpp" />
     <ClInclude Include="include\Game.hpp" />
     <ClInclude Include="include\Mood.hpp" />
@@ -40,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\stf.cl" />
+    <None Include="shaders\test.frag" />
     <None Include="src\scripts\getSources.sh" />
   </ItemGroup>
   <ItemGroup>

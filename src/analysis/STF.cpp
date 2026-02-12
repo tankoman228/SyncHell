@@ -187,8 +187,6 @@ namespace STF {
         result.timeLength = numChunks;
         result.spectro = new float*[numChunks];
 
-        //result.reserve(numChunks); //            chunk'  
-
         for (size_t chunk = 0; chunk < numChunks; chunk++) {
             result.spectro[chunk] = new float[256];
             for (size_t feature = 0; feature < 256; feature++) {
@@ -196,7 +194,34 @@ namespace STF {
             }
         }
 
-        //         OpenCL         
+        // Нормализация
+        float featureMax[256] = { -999999 };
+        float featureMin[256] = { 999999 };
+
+        for (int feature = 0; feature < 256; feature++) {
+            for (int t = 0; t < result.timeLength; t++) {
+
+                float& val = result.spectro[t][feature];
+                if (val > featureMax[feature]) {
+                    featureMax[feature] = val;
+                }
+                else if (val < featureMin[feature]) {
+                    featureMin[feature] = val;
+                }
+            }
+        }
+        for (int feature = 0; feature < 256; feature++) {
+            if (featureMax[feature] < -9999) {
+                featureMax[feature] = 1;
+            }
+        }
+        for (int feature = 0; feature < 256; feature++) {
+            for (int t = 0; t < result.timeLength; t++) {               
+                result.spectro[t][feature] = result.spectro[t][feature] / featureMax[feature] * 255.f;
+            }
+        }
+
+        // OpenCL         
         clReleaseMemObject(bufferOut);
         clReleaseMemObject(bufferIn);
         clReleaseKernel(kernel);

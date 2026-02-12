@@ -1,9 +1,12 @@
 #include <Game.hpp>
 
 int currentStfIndex;   // актуальный индекс для фич
-char strFormatBuf[32]; // ТОЛЬКО ДЛЯ ОСНОВНОГО ПОТОКА, МЕЛКИЕ СТРОКИ
+char strFormatBuf[64]; // ТОЛЬКО ДЛЯ ОСНОВНОГО ПОТОКА, МЕЛКИЕ СТРОКИ
 
 void GameScene::ProjectilesCycle(float t) {
+
+    int spawnDamageAura = 0;
+    int spawnHealAura = 0;
 
     for (int i = Projectiles.size() - 1; i >= 0; i--)
     {
@@ -11,27 +14,31 @@ void GameScene::ProjectilesCycle(float t) {
         {
             delete Projectiles[i]; 
             Projectiles.erase(Projectiles.begin() + i);
+
+            continue;
         }
         else if (Projectiles[i]->isCollidable && HasCollision(player, Projectiles[i]->shape))
         {
             if (Projectiles[i]->damage < 0) {
-                Projectiles.push_back(new ProjectileAura(player, 10, 255, 10, 0.5f));
+                spawnHealAura++;
                 playerShield = 64;
                 playerHealth -= Projectiles[i]->damage;
                 if (playerHealth > 255) playerHealth = 255;
             }
             else 
             {
+                spawnDamageAura++;
                 playerShield -= Projectiles[i]->damage;
                 if (playerShield < 0) {
                     playerHealth += playerShield;
                     playerShield = 0;
                 }
-                Projectiles.push_back(new ProjectileAura(player, 255, 10, 10, 0.1f));
             }
 
             delete Projectiles[i]; 
             Projectiles.erase(Projectiles.begin() + i);
+
+            continue;
         }
         else if (Projectiles[i]->lifeTime < 0.3f) {
             Projectiles[i]->shape.setOutlineThickness((0.4f - Projectiles[i]->lifeTime) * 3.f);
@@ -39,7 +46,14 @@ void GameScene::ProjectilesCycle(float t) {
         else Projectiles[i]->shape.setOutlineThickness(0.f);
 
         Projectiles[i]->Cycle(t);
-        window->draw(Projectiles[i]->shape);
+    }
+
+    // Чтобы перераспределение памяти не привело к ошыбке
+    for (int i = 0; i < spawnDamageAura; i++) {
+        Projectiles.push_back(new ProjectileAura(player, 255, 10, 10, 0.1f));
+    }
+    for (int i = 0; i < spawnHealAura; i++) {
+        Projectiles.push_back(new ProjectileAura(player, 10, 255, 10, 0.5f));
     }
 }
 
@@ -76,6 +90,11 @@ void GameScene::FeaturesCycleResolve(float t) {
     }
 }
 
+sf::RenderTexture bufferA, bufferB;
+sf::RenderTexture* prevFrame;
+sf::RenderTexture* nextFrame;
+bool buffersInitialized = false;
+
 void GameScene::VisualCycle(float t) {
 
     // барьер поля
@@ -88,6 +107,37 @@ void GameScene::VisualCycle(float t) {
     healthbar.setFillColor(sf::Color(255 - playerHealth, playerHealth, 0));
     healthbar.setScale(playerHealth / 255.f, 1);
     shielbar.setScale(playerShield / 64.f, 1);
+
+    // фон
+    {
+        if (!buffersInitialized) {
+            auto size = window->getSize();
+            bufferA.create(size.x, size.y);
+            bufferB.create(size.x, size.y);
+            prevFrame = &bufferA;
+            nextFrame = &bufferB;
+            buffersInitialized = true;
+        }
+
+        // В цикле:
+        nextFrame->clear();
+        shader.setUniform("previousTexture", prevFrame->getTexture()); // Передаем старый кадр
+        shader.setUniformArray("spectrum", &stf.spectro[currentStfIndex][0], 256);
+        shader.setUniform("deltaTime", t);
+        static float tt = 0;
+        tt += t;
+        shader.setUniform("time", tt);
+
+        nextFrame->clear();
+        nextFrame->draw(background, &shader);
+        nextFrame->display();
+
+        sf::Sprite resultSprite(nextFrame->getTexture());
+        window->draw(resultSprite);
+
+        std::swap(prevFrame, nextFrame);
+    }
+    window->draw(barrier);
 
     // Прыгающие декорации по краям
     if (decoreR + decoreG + decoreB < 50) {
@@ -110,12 +160,17 @@ void GameScene::VisualCycle(float t) {
         window->draw(bouncyJumpers[i]);
     }
 
+    // снаряды
+    for (int i = Projectiles.size() - 1; i >= 0; i--)
+    {
+        window->draw(Projectiles[i]->shape);
+    }
+
     // счётчик FPS
     snprintf(strFormatBuf, sizeof(strFormatBuf), "%d FPS", int(1.f / t));
     txtFpsCounter.setString(strFormatBuf);
 
     // Отрисовка
-    window->draw(barrier);
     window->draw(player);
     window->draw(healthbar);
     window->draw(shielbar);
@@ -153,8 +208,10 @@ void GameScene::Cycle(float t) {
 
         if (playerHealth < 0) {
             delayBeforeRestartCounter = delayBeforeRestartSeconds - 0.1f;
-            player.setPosition(999999,999999); // просто спрячем за карту
+            player.setPosition(window->getSize().x * 2.f, window->getSize().y * 2.f); // просто спрячем за карту
             awaitingRestart = true;
+            
+            std::cout << "Player is dead, await restart\n";
         }
         else if (playerShield < 64) {
             playerShield += t * 20;
@@ -164,17 +221,23 @@ void GameScene::Cycle(float t) {
     else {
         playerHealth = 0;
         playerShield = 0;
+
+        std::cout << "restart await counter: " << delayBeforeRestartCounter << "\n";
         
         delayBeforeRestartCounter -= t;
 
         if (delayBeforeRestartCounter < 4) {
-            music.setVolume(delayBeforeRestartCounter * 10.f);
+            music.setVolume(std::max(2.f, delayBeforeRestartCounter * 10.f));
         }
 
         if (delayBeforeRestartCounter < 0) {
+
+            std::cout << "restart\n";
             delayBeforeRestartCounter = 999999; // деактивация счётчика
             music.setVolume(100);
             SetupLevel(); // реально рестарт уровня
+
+            return;
         }
     }
 

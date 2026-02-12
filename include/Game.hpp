@@ -29,6 +29,8 @@ class GameScene
     sf::Font font;
     sf::Text txtFpsCounter;
     sf::Text txtProgress;
+    sf::RectangleShape background;
+    sf::Shader shader;
 
     // Константы в рамках уровня или вообще всей игры
     const float barrierRadiusInitial = 300;
