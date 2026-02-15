@@ -1,7 +1,8 @@
 #version 330
 
+// --- SYNC HELL BASIC BG SHADER PARAMETERS --- (РµСЃР»Рё СЂРµРґР°РєС‚РёСЂРѕРІР°С‚СЊ, С‚Рѕ Сѓ РІСЃРµС… СЃСЂР°Р·Сѓ)
 uniform sampler2D previousTexture; 
-uniform float spectrum[256]; // от 0 до 255 (нормализованные фичи звука)      
+uniform float spectrum[256]; // РѕС‚ 0 РґРѕ 255 (РЅРѕСЂРјР°Р»РёР·РѕРІР°РЅРЅС‹Рµ С„РёС‡Рё Р·РІСѓРєР°)      
 uniform vec2 resolution;
 uniform float deltaTime;
 uniform float time;
@@ -10,7 +11,7 @@ void main() {
     vec2 uv = gl_FragCoord.xy / resolution.xy;
     vec2 texel = 1.0 / resolution;
 
-    // Усреднение по соседям. Медленное изменение
+    // РЈСЃСЂРµРґРЅРµРЅРёРµ РїРѕ СЃРѕСЃРµРґСЏРј. РњРµРґР»РµРЅРЅРѕРµ РёР·РјРµРЅРµРЅРёРµ
     vec4 current = texture2D(previousTexture, uv);
 
     vec4 top     = texture2D(previousTexture, uv + vec2(0.0, texel.y));
@@ -18,19 +19,19 @@ void main() {
     vec4 left    = texture2D(previousTexture, uv + vec2(-texel.x, -texel.y));
     vec4 right   = texture2D(previousTexture, uv + vec2(texel.x, -texel.y));
     
-    float wind = (sin((time + uv.y) / 0.1) + 1) * 10.0; // от 0 до 20
+    float wind = (sin((time + uv.y) / 0.1) + 1) * 10.0; // РѕС‚ 0 РґРѕ 20
     vec4 blurred = 
         (
-            down * 20.0                           // вес 20
-            + left * wind + right * (20.0 - wind) // вес до 20        
-            + current                             // вес 1     
-            + top * 0.03                          // вес 0.03     
+            down * 20.0                           // РІРµСЃ 20
+            + left * wind + right * (20.0 - wind) // РІРµСЃ РґРѕ 20        
+            + current                             // РІРµСЃ 1     
+            + top * 0.03                          // РІРµСЃ 0.03     
         ) 
         / 41.04;
     
     vec4 finalColor = blurred;
 
-    // 3. Спавн "огня" из спектра
+    // 3. РЎРїР°РІРЅ "РѕРіРЅСЏ" РёР· СЃРїРµРєС‚СЂР°
     float h = uv.x * 4.0;
     float t = time * 3.0;
 

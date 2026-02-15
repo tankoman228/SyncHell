@@ -10,6 +10,92 @@
 
 namespace Spectro {
 
+    void loadRawSound(std::string file, std::vector<float>* waveRaw) {
+        if (!waveRaw) {
+            throw std::invalid_argument("waveRaw pointer is null");
+        }
+        
+        SF_INFO sfinfo;
+        SNDFILE* sndfile = sf_open(file.c_str(), SFM_READ, &sfinfo);
+        
+        if (!sndfile) {
+            throw std::runtime_error("Cannot open file: " + file);
+        }
+        
+        // Проверяем, что частота дискретизации соответствует требуемой
+        const int TARGET_SR = 44100;
+        
+        // Читаем все сэмплы
+        std::vector<float> temp(sfinfo.frames * sfinfo.channels);
+        sf_readf_float(sndfile, temp.data(), sfinfo.frames);
+        sf_close(sndfile);
+        
+        // Конвертируем в моно, если нужно
+        std::vector<float> mono(sfinfo.frames);
+        if (sfinfo.channels == 1) {
+            mono = temp;
+        } else {
+            for (int i = 0; i < sfinfo.frames; i++) {
+                float sum = 0;
+                for (int ch = 0; ch < sfinfo.channels; ch++) {
+                    sum += temp[i * sfinfo.channels + ch];
+                }
+                mono[i] = sum / sfinfo.channels; // Усреднение каналов
+            }
+        }
+        
+        // Ресемплинг до 44100 Гц, если нужно
+        if (sfinfo.samplerate != TARGET_SR) {
+            float ratio = static_cast<float>(TARGET_SR) / sfinfo.samplerate;
+            int newLength = static_cast<int>(mono.size() * ratio);
+            
+            std::vector<float> resampled(newLength);
+            
+            // Простая линейная интерполяция (для более качественного - использовать библиотеку)
+            #pragma omp parallel for
+            for (int i = 0; i < newLength; i++) {
+                float srcPos = i / ratio;
+                int srcIndex = static_cast<int>(srcPos);
+                float frac = srcPos - srcIndex;
+                
+                if (srcIndex + 1 < mono.size()) {
+                    resampled[i] = mono[srcIndex] * (1 - frac) + mono[srcIndex + 1] * frac;
+                } else {
+                    resampled[i] = mono[srcIndex];
+                }
+            }
+            
+            mono = std::move(resampled);
+        }
+        
+        // Нормализация (опционально - убеждаемся, что значения в [-1, 1])
+        float maxVal = 0.0f;
+        for (float val : mono) {
+            maxVal = std::max(maxVal, std::abs(val));
+        }
+        
+        if (maxVal > 1.0f) {
+            // Если значения превышают 1, нормализуем
+            float scale = 1.0f / maxVal;
+            #pragma omp parallel for
+            for (float& val : mono) {
+                val *= scale;
+            }
+        }
+        
+        // Масштабируем до [-100, 100] для удобства
+        const float SCALE_FACTOR = 100.0f;
+        waveRaw->resize(mono.size());
+        
+        #pragma omp parallel for
+        for (size_t i = 0; i < mono.size(); i++) {
+            waveRaw->operator[](i) = mono[i] * SCALE_FACTOR;
+        }
+        
+        std::cout << "Loaded: " << mono.size() << " waveRaw at " 
+                  << TARGET_SR << " Hz" << std::endl;
+    }
+
     Spectrogram getSpectroFromOgg(std::string file, int accuracy, int height) {
 
         Spectrogram result;
@@ -18,14 +104,14 @@ namespace Spectro {
         SF_INFO sfinfo;
         SNDFILE* sndfile = sf_open(file.c_str(), SFM_READ, &sfinfo);
 
-        std::vector<float> samples(sfinfo.frames * sfinfo.channels);
-        sf_readf_float(sndfile, samples.data(), sfinfo.frames);
+        std::vector<float> waveRaw(sfinfo.frames * sfinfo.channels);
+        sf_readf_float(sndfile, waveRaw.data(), sfinfo.frames);
         sf_close(sndfile);
 
         // Моно
         std::vector<float> mono(sfinfo.frames);
         for (int i = 0; i < sfinfo.frames; i++)
-            mono[i] = samples[i * sfinfo.channels];
+            mono[i] = waveRaw[i * sfinfo.channels];
 
         // 2. Настройки
         int samplerate = sfinfo.samplerate;

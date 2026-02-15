@@ -4,6 +4,7 @@
 #define SpectroH_define
 
 #include <string>
+#include <vector>
 
 namespace Spectro {
     
@@ -24,6 +25,8 @@ namespace Spectro {
             heigth = 0;
         }
     };
+
+    void loadRawSound(std::string file, std::vector<float>* waveRaw);
 
     Spectrogram getSpectroFromOgg(std::string file, int accuracy, int height);
 }

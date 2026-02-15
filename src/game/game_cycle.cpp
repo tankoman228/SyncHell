@@ -1,6 +1,6 @@
 #include <Game.hpp>
+#include <EIF.hpp>
 
-int currentStfIndex;   // актуальный индекс для фич
 char strFormatBuf[64]; // ТОЛЬКО ДЛЯ ОСНОВНОГО ПОТОКА, МЕЛКИЕ СТРОКИ
 
 void GameScene::ProjectilesCycle(float t) {
@@ -63,28 +63,22 @@ void GameScene::FeaturesCycleResolve(float t) {
 
     static float averages[256] = {0};       
     static float averagesDeltasAbs[256] = {0};    
-    static int prevIndex = 0;
-    if (prevIndex != currentStfIndex)
-    {
-        for (int feature = 0; feature < 20; feature++)
-        {
-            FeatureTriggered(stf.spectro[currentStfIndex][feature], feature);
-        }
-        for (int feature = 20; feature < 256; feature++)
-        {
-            float value = stf.spectro[currentStfIndex][feature];
-            float delta = abs(value - averages[feature]);
 
-            // перепад больше обычного, порог снижается с ростом громкости и сложностью
-            if (delta > averagesDeltasAbs[feature] * 2.3 / std::pow(currentVolume / 256.f, 6) / difficulty) {
-                FeatureTriggered(value, feature);
-                tension += 1.6 * (currentVolume / 256.f);
-            }
-            averages[feature] = averages[feature] * 0.85 + value * 0.15;
-            averagesDeltasAbs[feature] = averagesDeltasAbs[feature] * 0.85 + delta * 0.15;
+    // TODO: переписать логику появления снарядов по уху
+    for (int feature = 0; feature < 256; feature++)
+    {
+        float value = EIF::OUT_Pendulum[feature];
+        float delta = abs(value - averages[feature]);
+
+        // перепад больше обычного, порог снижается с ростом громкости и сложностью
+        if (delta > averagesDeltasAbs[feature] * 2.3 / std::pow(currentVolume / 256.f, 6) / difficulty) {
+            FeatureTriggered(value, feature);
+            tension += 1.6 * (currentVolume / 256.f);
         }
+        averages[feature] = averages[feature] * 0.85 + value * 0.15;
+        averagesDeltasAbs[feature] = averagesDeltasAbs[feature] * 0.85 + delta * 0.15;
     }
-    prevIndex = currentStfIndex;
+    
     if (tension > 1) {
         tension -= t * tension / 2.f; // за 2 секунды при отсутствии триггеров напряжение упадёт до нуля
     }
@@ -122,7 +116,7 @@ void GameScene::VisualCycle(float t) {
         // В цикле:
         nextFrame->clear();
         shader.setUniform("previousTexture", prevFrame->getTexture()); // Передаем старый кадр
-        shader.setUniformArray("spectrum", &stf.spectro[currentStfIndex][0], 256);
+        shader.setUniformArray("spectrum", &EIF::OUT_Pendulum[0], 256);
         shader.setUniform("deltaTime", t);
         static float tt = 0;
         tt += t;
@@ -138,27 +132,6 @@ void GameScene::VisualCycle(float t) {
         std::swap(prevFrame, nextFrame);
     }
     window->draw(barrier);
-
-    // Прыгающие декорации по краям
-    if (decoreR + decoreG + decoreB < 50) {
-        decoreG += t * 10.f;
-    }
-    for (int i = 0; i < 12; i++) {
-
-        float feature = currentStfIndex < stf.timeLength ? stf.spectro[currentStfIndex][240 + i] / bouncyJumpersMaxVals[i] : 0;
-        
-        // скользящее среднее от текущего масштаба и требуемой высоты. Условие с "?" нужно, чтобы степень не обнуляла колебания на младших диапазонах
-        float scaler = (
-            (std::pow(feature * 1.7f, 3) + feature * 20.f + 0.2f) * 0.1f 
-            + bouncyJumpers->getScale().x * 0.9f);
-        
-        float shader = (feature / bouncyJumpersMaxVals[i]) * 0.3 + 0.69999f;
-
-        bouncyJumpers[i].setScale(scaler, 1.f);
-        bouncyJumpers[i].setFillColor(sf::Color(shader * decoreR, shader * decoreG, shader * decoreB));
-
-        window->draw(bouncyJumpers[i]);
-    }
 
     // снаряды
     for (int i = Projectiles.size() - 1; i >= 0; i--)
@@ -185,24 +158,26 @@ void GameScene::Cycle(float t) {
 
     HandleInput(t); // WASD
 
-    // Вычисляем текущий индекс для фич, время STF-граммы
-    currentStfIndex = static_cast<int>((music.getPlayingOffset().asSeconds() / musicDurationSeconds) * (stf.timeLength - 1));
-    if (currentStfIndex >= stf.timeLength) currentStfIndex = 0; // на всякий случай
+    // Вычисляем текущий индекс
+    int rawSoundIndexEnd = std::min(rawSound.size() - 1, ulong(music.getPlayingOffset().asSeconds() * 44100.f));
+    if (rawSoundPrevIndex < rawSoundIndexEnd) EIF::Cycle(&rawSound, rawSoundPrevIndex + 1, rawSoundIndexEnd);
+    rawSoundPrevIndex = rawSoundIndexEnd;
+    std::cout << EIF::OUT_Pendulum[20] << "\n";
 
-    currentVolume = stf.spectro[currentStfIndex][252];
+    currentVolume = 128.f; // TODO: прописать
     
     FeaturesCycleResolve(t); // спавнит снаряды, но только когда проверит, что динамика трека подходит
     ProjectilesCycle(t);     // цикл самих снарядов, их деспавна и движения
 
     // Просто изменения динамических параметров
     angleAtack += t * 9;
-    healingReload -= t * std::pow(currentVolume / avgVolume, 3) * 1.5;
+    healingReload -= t * 1.5;
 
     // если не запущен счётчик ожидания рестарта уровня
     if (!awaitingRestart) {
 
-        if (currentStfIndex != 0) {
-            snprintf(strFormatBuf, sizeof(strFormatBuf), "%d%%", int(float(currentStfIndex) / float(stf.timeLength) * 100.f) + 1); // а то 99 из-за округлений остаётся
+        if (rawSoundIndexEnd != 0) {
+            snprintf(strFormatBuf, sizeof(strFormatBuf), "%d%%", int(double(rawSoundIndexEnd) / double(rawSound.size()) * 100.0f) + 1); // а то 99 из-за округлений остаётся
             txtProgress.setString(strFormatBuf);
         }
 

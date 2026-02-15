@@ -2,6 +2,7 @@
 #include <Game.hpp>
 #include <filesystem>
 #include <TGUI/TGUI.hpp>
+#include <EIF.hpp> 
 
 #ifdef _WIN32
 #include <TGUI/Backend.hpp> // у иеня почему-то вот этот заголовок адекватно пашет, а тот не хотит брать
@@ -65,6 +66,9 @@ tgui::Panel::Ptr createLevelCardWithBottomSpacing(tgui::Panel::Ptr content, floa
 
 int main()
 {
+    // Инициализация модели уха
+    EIF::InitParams();
+
     // Получаем разрешение экрана
     sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
     

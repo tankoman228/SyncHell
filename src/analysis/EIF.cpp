@@ -15,13 +15,20 @@ float EIF::OUT_Pendulum[256] = {0}; // extern
 /// </summary>
 float EIF::OUT_Deep[256] = { 0 };  // extern
 
-float DeepEnviroment[256 * 32];  // "среда" внутренних рецепторов
-float PendulumEnviroment[256];   // необработанное значение маятников
+double DeepEnviroment[256 * 32];  // "среда" внутренних рецепторов
+double PendulumL[256]; // отклонение маятника  
+double PendulumV[256]; // скорость маятника
 
 // веса для рецепторов
-float PendulumStrengths[256];
-float DeepEnviromentHardness[256 * 32];
-float DeepEnviromentResistance[256 * 32];
+double PendulumK[256];
+double DeepEnviromentHardness[256 * 32];
+double DeepEnviromentResistance[256 * 32];
+
+// Константы симуляции
+const double minFreq = 20.0;     // Минимальная частота (индекс 0)
+const double maxFreq = 20000.0;  // Максимальная частота (индекс 255)
+const double sampleRate = 44100;
+const double R = (1.0 - 5.0 / sampleRate); // чуть ниже 1
 
 /// <summary>
 /// В переменные OUT выведет энергию с рецепторов
@@ -30,30 +37,45 @@ float DeepEnviromentResistance[256 * 32];
 /// 44.1 КГЦ, т.е. секунда звука это 44 100 элементов массива
 /// или 44 100 т.е. 176 КБ на секунду в ОЗУ
 /// </summary>
-void EIF::Cycle(std::vector<float> waveRaw, int waveIndexEnd, int& waveIndex, float deltaTimeSec) {
+void EIF::Cycle(std::vector<float>* waveRaw, int waveIndexStart, int waveIndexEnd) {
 
-    // TODO: Внутренний рецептор (код калька с C# неизвестно как работавшая)
-    for (int& i = waveIndex; i < waveIndexEnd; i++)
-    {
-        DeepEnviroment[0] = waveRaw[i]; // волна входит в среду
+    // TODO: сделать их
+    for (int waveI = waveIndexStart; waveI < waveIndexEnd; waveI++) {
+        
+        // Импульс, полученный от волны в этот период
+        float F = waveRaw->operator[](waveI);
 
-        for (int j = std::min(256 * 32 - 2, i + 1); j >= 0; j--)
-        {
-            // Вправо идёт, меняясь согласно жёсткости и сопротивлению среды
-            DeepEnviroment[j + 1] =
-                (DeepEnviroment[j] * DeepEnviromentHardness[j] / DeepEnviromentHardness[j + 1] 
-                    + DeepEnviroment[j + 1] * DeepEnviromentResistance[j])
+        // V(i)’ = F(t) - L(i) * k(i) 
+        // L(i)’ = V(i)’
+        // + трение
+        // Пендельная модель
+        for (int i = 0; i < 256; i++) {
+            PendulumV[i] += F - PendulumL[i] * PendulumK[i];
+            PendulumV[i] *= R;
+            PendulumL[i] += PendulumV[i];
 
-                / (DeepEnviromentResistance[j] + 1)
-                * 0.999f;
-
-            OUT_Deep[j] += std::abs(DeepEnviroment[j + 1]); // 
+            // Получение энергии в итоге
+            OUT_Pendulum[i] = std::max(float(PendulumL[i]), OUT_Pendulum[i]);
+            //OUT_Pendulum[i] = std::max(255.0f, OUT_Pendulum[i]);
+            OUT_Pendulum[i] *= R;
         }
     }
 
     for (int i = 0; i < 256; i++) {
-        OUT_Pendulum[i] *= 1;
-        OUT_Deep[i] *= 1; // TODO: затухание
+        OUT_Deep[i] *= 1; // TODO: модель внутренних
+    }
+}
+
+void EIF::InitParams() {
+	// TODO: подсчитать веса для всей модели
+    for (int i = 0; i < 256; i++) {
+
+        double frequency = minFreq * std::pow(maxFreq / minFreq, double(i) / 255.0);
+
+        // PendulumK пропорционален квадрату частоты (как жесткость пружины)
+        // Берем scale = 1.0/sampleRate^2 для грубой нормализации
+        double scale = 1.0 / (sampleRate * sampleRate);
+        PendulumK[i] = frequency * frequency * scale * 4.0 * M_PI * M_PI;
     }
 }
 
@@ -64,10 +86,6 @@ void EIF::Cycle(std::vector<float> waveRaw, int waveIndexEnd, int& waveIndex, fl
 /// <param name="noteIndex">Номер рецептора (0-255)</param>
 std::vector<float> EIF::GetWaveForNote(int length, int noteIndex) {
     std::vector<float> waveRaw(length);
-
-    const double minFreq = 20.0;    // Минимальная частота (индекс 0)
-    const double maxFreq = 20000.0;  // Максимальная частота (индекс 255)
-    const double sampleRate = 44100;
     
     // Логарифмический шаг: каждая октава умножает частоту на 2
     // Всего октав от 20 до 20000: log2(20000/20) = log2(1000) ≈ 10 октав
@@ -81,7 +99,15 @@ std::vector<float> EIF::GetWaveForNote(int length, int noteIndex) {
     return waveRaw;
 }
 
-void EIF::InitParams() {
-	// TODO: генерировать ДО РЕ МИ ФА СО ЛЯ СИ для разных октав по частотам и подгонять под них каждый
-	// из рецепторов, проверяя через Cycle
+void EIF::ClearOutput() {
+    for (int i = 0; i < 256; i++) {
+        OUT_Deep[i] = 0;
+        OUT_Pendulum[i] = 0;
+        PendulumL[i] = 0;
+        PendulumV[i] = 0;
+    }
+
+    for (int i = 0; i < 256 * 32; i++) { 
+        DeepEnviroment[i] = 0;
+    }
 }

@@ -25,7 +25,6 @@ class GameScene
     sf::RectangleShape player;
     sf::RectangleShape healthbar;
     sf::RectangleShape shielbar;
-    sf::RectangleShape bouncyJumpers[12]; float bouncyJumpersMaxVals[12] = {0.1};
     sf::Font font;
     sf::Text txtFpsCounter;
     sf::Text txtProgress;
@@ -40,7 +39,7 @@ class GameScene
     const int spectroFramesInStfFrame = 16; // т.е. если секунда делится на 512 сегментов, число делим на 16 и получаем 32 кадра в секунду
     const int spectroHeight = 384; // Не трогать, а если и трогать, то поменять один массив в cl файле!
     
-    float avgVolume = 0; // от 0 до 255
+    // временно отключено для теста EIF float avgVolume = 0; // от 0 до 255
     float musicDurationSeconds = 0; 
     float difficulty = 1; // преобразованное уже конструктором до дроби, всегда больше нуля
 
@@ -55,8 +54,11 @@ class GameScene
     sf::Vector2f barrierCenterInitial;
     sf::Vector2f barrierCenter;
     std::vector<Projectile *> Projectiles;
-    Spectro::Spectrogram stf;
+    // Spectro::Spectrogram stf; временно отключено для теста EIF
     Spectro::Spectrogram spectro;
+
+    std::vector<float> rawSound; // сырой звук 44 100 ГЦ значение волны от -100 до 100
+    float rawSoundPrevIndex = 0;
 
     // Звуки SFML
     sf::Music music;
@@ -78,7 +80,7 @@ public:
     GameScene(sf::RenderWindow *window_, std::string level, int difficulty_);
     ~GameScene() {
         spectro.FreeMemory();
-        stf.FreeMemory();
+        // временно отключено для теста EIF stf.FreeMemory();
     }
 
     /* вызывается до display и после clear*/

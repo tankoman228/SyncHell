@@ -1,4 +1,5 @@
 #include <Game.hpp>
+#include <EIF.hpp>
 
 namespace fs = std::filesystem;
 
@@ -33,6 +34,7 @@ void GameScene::SetupLevel() {
     barrier.setPointCount(128);
 
     music.stop();
+    EIF::ClearOutput();
 
     musicDurationSeconds = music.getDuration().asSeconds();
     music.play();
@@ -67,31 +69,6 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     player.setFillColor(sf::Color::Green);
     player.setOrigin(playerSize / 2, playerSize / 2); // Центрируем
 
-    // Теперь засетапим декор, квадратики слева и справа, которые будут жмякаться в такт
-    for (int t = 0; t < stf.timeLength; t++) {
-        for (int i = 0; i < 12; i++) {
-            bouncyJumpersMaxVals[i] = std::max(bouncyJumpersMaxVals[i], stf.spectro[t][i + 240]);
-        }
-        avgVolume += stf.spectro[t][252];
-    }
-    float jumperHeight = window->getSize().y / 6.f;
-    for (int i = 0; i < 12; i++) {
-
-        // Подсчитали для нормализации значений фич с 240-й (суммы фич по всем полосам), надо сами прямоугольники задать
-        bouncyJumpers[i] = sf::RectangleShape(sf::Vector2f(10.f, jumperHeight));
-        bouncyJumpers[i].setFillColor(sf::Color::White);
-
-        if (i < 6) {
-            bouncyJumpers[i].setPosition(0, i * jumperHeight);
-        }
-        else {
-            bouncyJumpers[i].setOrigin(10, 0);
-            bouncyJumpers[i].setPosition(window->getSize().x, (i - 6) * jumperHeight);
-        }
-    }
-
-    avgVolume /= stf.timeLength;
-
     // Text
     font.loadFromFile("assets/sansation.ttf");
 
@@ -104,8 +81,9 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     txtProgress.setFillColor(sf::Color::Green);
 
     // TODO: придумать, что делать с диаграммой
-    STF::GetSTFVisualized(stf);
+    // STF::GetSTFVisualized(stf);
 
+    Spectro::loadRawSound("levels/" + level, &rawSound);
     SetupLevel(); // тут заиграет музыка
 
     // Остатки спрайтов, зависимых от результатов SetupLevel
@@ -119,7 +97,7 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     shielbar.setFillColor(sf::Color(0, 255, 255));
 
     background.setSize(sf::Vector2f(1920, 1080));
-    shader.loadFromFile("shaders/test.frag", sf::Shader::Fragment);
+    shader.loadFromFile("shaders/spectro.frag", sf::Shader::Fragment);
     shader.setUniform("resolution", sf::Vector2f(window->getSize()));
 }
 
@@ -129,6 +107,8 @@ void GameScene::LoadFromFile(std::string level) {
     std::filesystem::create_directory(fs::current_path() / ".cache");
     std::string cache_path = ".cache/" + (level + ".stf");
 
+    /* Пока что считать буду в реальном времени
+
     // Пробуем загрузить из кэша
     bool loaded_from_cache = false;
     std::ifstream cache_file(cache_path, std::ios::binary);
@@ -136,6 +116,7 @@ void GameScene::LoadFromFile(std::string level) {
     if (cache_file.is_open()) {
         // Читаем заголовок с размерами
         size_t outer_size, inner_size;
+        
         
         if (cache_file.read(reinterpret_cast<char*>(&outer_size), sizeof(size_t)) &&
             cache_file.read(reinterpret_cast<char*>(&inner_size), sizeof(size_t))) {
@@ -209,5 +190,6 @@ void GameScene::LoadFromFile(std::string level) {
             std::cerr << "Warning: Could not save cache to " << cache_path << "\n";
         }
     }
+        */
 
 }
