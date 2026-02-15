@@ -8,12 +8,12 @@
 /// <summary>
 /// внешние рецепторы уха
 /// </summary>
-float OUT_Pendulum[256] = {0}; // extern
+float EIF::OUT_Pendulum[256] = {0}; // extern
 
 /// <summary>
 /// внутренние рецепторы уха
 /// </summary>
-float OUT_Deep[256] = { 0 };  // extern
+float EIF::OUT_Deep[256] = { 0 };  // extern
 
 float DeepEnviroment[256 * 32];  // "среда" внутренних рецепторов
 float PendulumEnviroment[256];   // необработанное значение маятников
@@ -62,18 +62,19 @@ void EIF::Cycle(std::vector<float> waveRaw, int waveIndexEnd, int& waveIndex, fl
 /// </summary>
 /// <param name="length">Количество семплов (44100 = 1 секунда)</param>
 /// <param name="noteIndex">Номер рецептора (0-255)</param>
-std::vector<float> GetWaveForNote(int length, int noteIndex) {
+std::vector<float> EIF::GetWaveForNote(int length, int noteIndex) {
     std::vector<float> waveRaw(length);
 
-    const double startFreq = 20.0;  // Базовая частота для 0-го индекса
-    const double step = 1.0 / 36.0; // Шаг: 1/36 октавы (так как 3 шага на полутон, а в октаве 12 полутонов)
-    const double sampleRate = 44100.0;
-
-    // Вычисляем частоту для текущего индекса: f = f0 * 2^(index * step)
-    double frequency = startFreq * std::pow(2.0, noteIndex * step);
-
+    const double minFreq = 20.0;    // Минимальная частота (индекс 0)
+    const double maxFreq = 20000.0;  // Максимальная частота (индекс 255)
+    const double sampleRate = 44100;
+    
+    // Логарифмический шаг: каждая октава умножает частоту на 2
+    // Всего октав от 20 до 20000: log2(20000/20) = log2(1000) ≈ 10 октав
+    // Формула: f = minFreq * (maxFreq/minFreq)^(index/255)
+    double frequency = minFreq * std::pow(maxFreq / minFreq, noteIndex / 255.0);
+    
     for (int i = 0; i < length; ++i) {
-        // Генерируем стандартный синус
         waveRaw[i] = (float)std::sin(2.0 * M_PI * frequency * i / sampleRate);
     }
 

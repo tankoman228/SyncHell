@@ -23,6 +23,7 @@ set(SOURCES
     src/analysis/Spectro.cpp
     src/analysis/STF.cpp
     src/analysis/STFGram.cpp
+    src/analysis/EIF.cpp
     src/collide.cpp
     src/game/game_cycle.cpp
     src/game/game_control.cpp

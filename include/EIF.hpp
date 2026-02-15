@@ -33,6 +33,13 @@ namespace EIF {
 	/// Инициализация всех весов для рецепторов
 	/// </summary>
 	void InitParams();
+
+	/// <summary>
+	/// Генерирует синусоиду заданной длины для конкретного номера рецептора.
+	/// </summary>
+	/// <param name="length">Количество семплов (44100 = 1 секунда)</param>
+	/// <param name="noteIndex">Номер рецептора (0-255)</param>
+	std::vector<float> GetWaveForNote(int length, int noteIndex);
 }
 
 #endif
