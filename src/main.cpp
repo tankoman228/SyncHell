@@ -3,8 +3,6 @@
 #include <filesystem>
 #include <TGUI/TGUI.hpp>
 
-#include <EIF.hpp> // TODO: удали меня
-
 #ifdef _WIN32
 #include <TGUI/Backend.hpp> // у иеня почему-то вот этот заголовок адекватно пашет, а тот не хотит брать
 #endif
@@ -319,62 +317,9 @@ int main()
 
     gui.add(aboutButton);
 
-    float time = 0; // тестирую звуки (потом удалить)
-    sf::Sound testSound;
-    sf::SoundBuffer testSoundBuffer;
-    std::vector<float> soundRaw44100; // SFML ожидает 16-битные сэмплы
-    bool reached = false;
-
     while (window.isOpen())
     {
         deltaTime = clock.restart().asSeconds();
-        
-        // тестирую звуки (потом удалить)
-        time += deltaTime * 3.f;
-        if (int(time) % 3 == 0) {
-            if (!reached) {
-                reached = true;
-
-                // Отладка
-                int noteIdx = int(time) % 256;
-                std::cout << "Генерация ноты: индекс=" << noteIdx << ", время=" << time << std::endl;
-                
-                soundRaw44100 = EIF::GetWaveForNote(44100 * 2, noteIdx); // +- время на передых
-                
-                // Проверка, что вектор не пустой
-                std::cout << "Размер сгенерированного вектора: " << soundRaw44100.size() << std::endl;
-                
-                const double minFreq = 20.0;    // Минимальная частота (индекс 0)
-                const double maxFreq = 20000.0;  // Максимальная частота (индекс 255)
-                double frequency = 20 * std::pow(maxFreq / minFreq, noteIdx / 255.0);
-                std::cout << "Частота: " << frequency << std::endl;
-
-                if (!soundRaw44100.empty()) {
-                    // Конвертируем float (-1..1) в Int16 для SFML
-                    std::vector<sf::Int16> samples(soundRaw44100.size());
-                    for (size_t i = 0; i < soundRaw44100.size(); i++) {
-                        samples[i] = static_cast<sf::Int16>(soundRaw44100[i] * 32767);
-                    }
-                    
-                    // Проверка первого сэмпла
-                    if (samples.size() > 0) {
-                        std::cout << "Первый сэмпл: " << samples[0] << std::endl;
-                    }
-                    
-                    // Загружаем в буфер
-                    if (testSoundBuffer.loadFromSamples(samples.data(), samples.size(), 1, 44100)) {
-                        testSound.setBuffer(testSoundBuffer);
-                        testSound.play();
-                        std::cout << "Звук запущен" << std::endl;
-                    } else {
-                        std::cout << "Ошибка загрузки буфера" << std::endl;
-                    }
-                }
-            }    
-        }
-        else {
-            reached = false;
-        }
 
         // Обработка событий
         sf::Event event;
