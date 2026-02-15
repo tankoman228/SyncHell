@@ -46,7 +46,7 @@ inline void PendulumTick(float F, int i) {
     PendulumV[i] *= PendulumR[i];
     PendulumL[i] += PendulumV[i];
 
-    PendulumL[i] *= 0.99;
+    PendulumL[i] *= 0.992;
 
     // Получение энергии в итоге
     EIF::OUT_Pendulum[i] = std::max(float(PendulumL[i]), EIF::OUT_Pendulum[i]);
@@ -54,7 +54,9 @@ inline void PendulumTick(float F, int i) {
     EIF::OUT_Pendulum[i] *= 0.99;
 
     if (EIF::OUT_PendulumMultiplexer[i] != 1 && EIF::OUT_Pendulum[i] > 255) {
-        std::cout << "OVERFLOW! " << EIF::OUT_Pendulum[i] << "\n";
+        //std::cout << "OVERFLOW! " << i << " " << EIF::OUT_Pendulum[i] << "\n";
+
+        EIF::OUT_Pendulum[i] = 255.f; // TODO: найти причину ошибки
     }
 
     if (EIF::OUT_Pendulum[i] == NAN || EIF::OUT_Pendulum[i] == INFINITY || EIF::OUT_Pendulum[i] == -INFINITY) {
@@ -92,6 +94,7 @@ void EIF::InitParams() {
     EIF::ClearOutput();
     for (int i = 0; i < 256; i++) {
 
+        EIF::OUT_PendulumMultiplexer[i] = 1;    
         double frequency = minFreq * std::pow(maxFreq / minFreq, double(i) / 255.0);
 
         // PendulumK пропорционален квадрату частоты (как жесткость пружины)
@@ -169,7 +172,6 @@ void EIF::ClearOutput() {
         OUT_Pendulum[i] = 0;
         PendulumL[i] = 0;
         PendulumV[i] = 0;
-        EIF::OUT_PendulumMultiplexer[i] = 1;
     }
 
     for (int i = 0; i < 256 * 32; i++) { 

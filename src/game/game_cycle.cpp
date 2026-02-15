@@ -71,7 +71,7 @@ void GameScene::FeaturesCycleResolve(float t) {
         float delta = abs(value - averages[feature]);
 
         // перепад больше обычного, порог снижается с ростом громкости и сложностью
-        if (delta > averagesDeltasAbs[feature] * 2.3 / std::pow(currentVolume / 256.f, 6) / difficulty) {
+        if (value > averages[feature] * 9.3 / difficulty) {
             FeatureTriggered(value, feature);
             tension += 1.6 * (currentVolume / 256.f);
         }

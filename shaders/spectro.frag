@@ -29,9 +29,10 @@ void main() {
         g = clamp((energy - 250.0) / (255.0 - 250.0), 0.0, 1.0);  // ещё громче белый
         b = clamp(energy / 16.0, 0.0, 1.0);  // тихий = синий  
 
-        finalColor.r = r;
-        finalColor.g = g;
-        finalColor.b = g;
+        // + тень, чтобы экран не забеляло
+        finalColor.r = r / 4.0;
+        finalColor.g = g / 4.0;
+        finalColor.b = b / 4.0;
     }
 
     gl_FragColor = finalColor;

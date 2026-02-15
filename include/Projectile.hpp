@@ -119,13 +119,13 @@ struct ProjectileHexagon : Projectile
 
 struct ProjectileRound : Projectile
 {
-    sf::Vector2f positionStart;
+    sf::Vector2f positionGrav;
     float gravity;
 
-    ProjectileRound(sf::Vector2f position, sf::Vector2f speed, sf::Color color, int radius, float gravityMultiply) {
-        positionStart = position;
+    ProjectileRound(sf::Vector2f position, sf::Vector2f positionGrav, sf::Vector2f speed, sf::Color color, int radius) {
+        this->positionGrav = positionGrav;
         shape.setPointCount(20);
-        gravity = gravityMultiply * 0.03f;
+        gravity = radius * 0.09f;
         
         // Создаем точки для круга в локальных координатах (относительно центра фигуры)
         for (int i = 0; i < 20; ++i) {
@@ -148,12 +148,11 @@ struct ProjectileRound : Projectile
     virtual void Cycle(float t) {
 
         shape.move(speed * t);
-        speed += (positionStart - shape.getPosition()) * gravity;
-        gravity -= 0.005f * t;
 
-        if (t > 3) {
-            gravity = 0;
-        }
+        sf::Vector2f vectorGrav = (positionGrav - shape.getPosition()) * gravity;
+        speed += vectorGrav * t;
+
+        if (this->lifeTime > 1.4) gravity = 0;
 
         this->lifeTime += t;
     }
