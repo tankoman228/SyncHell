@@ -84,6 +84,26 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     // STF::GetSTFVisualized(stf);
 
     Spectro::loadRawSound("levels/" + level, &rawSound);
+
+    for (int i = 0; i < 256; i++) {
+        EIF::OUT_PendulumMultiplexer[i] = 1;
+    }
+
+    float maxVolumes[256] = {0.0000001f};
+    for (int i = 0; i < rawSound.size() / 4000 - 1; i++) {
+        
+        EIF::Cycle(&rawSound, i * 40, i * 40 + 39);
+
+        for (int j = 0; j < 256; j++) {
+            maxVolumes[j] = std::max(maxVolumes[j], EIF::OUT_Pendulum[i]);
+        }
+    }
+
+    for (int i = 0; i < 256; i++) {
+        std::cout << "max volume of " << i << " is " << maxVolumes[i] << "\n";
+        EIF::OUT_PendulumMultiplexer[i] = 255.f / maxVolumes[i];
+    }
+
     SetupLevel(); // тут заиграет музыка
 
     // Остатки спрайтов, зависимых от результатов SetupLevel

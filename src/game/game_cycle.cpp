@@ -162,8 +162,13 @@ void GameScene::Cycle(float t) {
     int rawSoundIndexEnd = std::min(rawSound.size() - 1, ulong(music.getPlayingOffset().asSeconds() * 44100.f));
     if (rawSoundPrevIndex < rawSoundIndexEnd) EIF::Cycle(&rawSound, rawSoundPrevIndex + 1, rawSoundIndexEnd);
     rawSoundPrevIndex = rawSoundIndexEnd;
-    std::cout << EIF::OUT_Pendulum[20] << "\n";
 
+    /*
+    for (int i = 0; i < 256; i++) {
+        std::cout << int(EIF::OUT_Pendulum[i]) << " ";
+    }
+    std::cout << "\n";
+    */
     currentVolume = 128.f; // TODO: прописать
     
     FeaturesCycleResolve(t); // спавнит снаряды, но только когда проверит, что динамика трека подходит

@@ -19,6 +19,9 @@ namespace EIF {
 	/// внутренние рецепторы
 	/// </summary>
 	extern float OUT_Deep[256];
+
+	// для корректировок
+	extern float OUT_PendulumMultiplexer[256];
 	
 	/// <summary>
 	/// В переменные OUT выведет энергию с рецепторов
