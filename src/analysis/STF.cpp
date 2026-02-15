@@ -5,6 +5,7 @@
 #include <sstream>  // For efficient reading into a string
 #include <CL/cl.h>
 #include <Spectro.hpp>
+#include <algorithm>  
 
 namespace STF {
 
@@ -194,7 +195,7 @@ namespace STF {
             }
         }
 
-        // Нормализация
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         float featureMax[256] = { -999999 };
         float featureMin[256] = { 999999 };
 

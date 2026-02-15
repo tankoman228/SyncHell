@@ -2,7 +2,14 @@
 #include <Game.hpp>
 #include <filesystem>
 #include <TGUI/TGUI.hpp>
-#include <TGUI/Backend.hpp>
+
+#ifdef _WIN32
+#include <TGUI/Backend.hpp> // у иеня почему-то вот этот заголовок адекватно пашет, а тот не хотит брать
+#endif
+
+#ifdef linux
+#include <TGUI/Backend/SFML-Graphics.hpp> // а тут надо указать конкретный бекенд
+#endif
 
 #include <TGUI/Widgets/Group.hpp>
 #include <TGUI/Widgets/Panel.hpp>

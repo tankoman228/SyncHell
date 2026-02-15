@@ -24,7 +24,7 @@ set(SOURCES
     src/analysis/STF.cpp
     src/analysis/STFGram.cpp
     src/collide.cpp
-    src/game/cycle.cpp
+    src/game/game_cycle.cpp
     src/game/game_control.cpp
     src/game/game_init.cpp
     src/game/projectile_spawn.cpp
