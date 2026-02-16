@@ -125,7 +125,7 @@ struct ProjectileRound : Projectile
     ProjectileRound(sf::Vector2f position, sf::Vector2f positionGrav, sf::Vector2f speed, sf::Color color, int radius) {
         this->positionGrav = positionGrav;
         shape.setPointCount(20);
-        gravity = radius * 0.09f;
+        gravity = radius * 40.f;
         
         // Создаем точки для круга в локальных координатах (относительно центра фигуры)
         for (int i = 0; i < 20; ++i) {
@@ -140,7 +140,7 @@ struct ProjectileRound : Projectile
         shape.setOutlineColor(sf::Color(190,190,190));
         shape.setOutlineThickness(3);
 
-        damage = radius / 3;
+        damage = radius / 6.f;
         
         this->speed = speed;
     }
@@ -149,10 +149,9 @@ struct ProjectileRound : Projectile
 
         shape.move(speed * t);
 
-        sf::Vector2f vectorGrav = (positionGrav - shape.getPosition()) * gravity;
-        speed += vectorGrav * t;
-
-        if (this->lifeTime > 1.4) gravity = 0;
+        sf::Vector2f vectorGrav = (positionGrav - shape.getPosition());
+        speed += gravity * vectorGrav * t / std::sqrt(vectorGrav.x * vectorGrav.x + vectorGrav.y * vectorGrav.y);
+        // скорость меняется пропорционально времени и вектору гравитации, делённому на свою длину (т.е. выйдет единичный вектор в нужную сторону)
 
         this->lifeTime += t;
     }

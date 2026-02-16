@@ -5,6 +5,11 @@ void GameScene::FeatureTriggered(float value, int feature)
     // около 0 равно инфразвук, триггерится при этом не только басами, около 255 ультразвук, он почти никогда не триггерится
     // TODO: полностью переписать логику их спавна, прям полностью
 
+    // перебалансю наоборот мб
+    feature = 255 - feature; // 255 теперь 0, а 0 теперь 255
+
+    //return; // временно отключил вообще
+
     if (feature < 20) {
         // мелкие
         float angleRad = (angleAtack / 5.f + feature * 3.f) * 3.14159265f / 180.0f ;
@@ -76,7 +81,7 @@ void GameScene::FeatureTriggered(float value, int feature)
         sf::Vector2f direction = (player.getPosition() + barrierCenter) * 0.5f - position;
 
         float length = sqrt(direction.x * direction.x + direction.y * direction.y);
-        sf::Vector2f velocity = (direction / length) * speedAtack * 650.f;
+        sf::Vector2f velocity = (direction / length) * speedAtack * 350.f;
 
         auto projectile = new ProjectileRound(
             position, 

@@ -61,22 +61,31 @@ void GameScene::FeaturesCycleResolve(float t) {
 
     if (awaitingRestart) return; // при остановленной музыке проверок быть не должно
 
-    static float averages[256] = {0};       
-    static float averagesDeltasAbs[256] = {0};    
+    static float prevValues[256];      
+    static float ribs[256];   
+    static bool  prevRibOrient[256];  
 
-    // TODO: переписать логику появления снарядов по уху
     for (int feature = 0; feature < 256; feature++)
     {
         float value = EIF::OUT_Pendulum[feature];
-        float delta = abs(value - averages[feature]);
+        bool ribOr = value > prevValues[feature];
+        prevValues[feature] = value;
 
-        // перепад больше обычного, порог снижается с ростом громкости и сложностью
-        if (value > averages[feature] * 9.3 / difficulty) {
+        if (ribOr != prevRibOrient[feature]) {
+            ribs[feature] += 3.f * t;
+        }
+        prevRibOrient[feature] = ribOr;
+
+        // важна "ребристость" EIF-граммы. Т.е. чем чаще меняется знак производной, тем лучше
+        if (ribs[feature] > 550.f / value / difficulty) {
             FeatureTriggered(value, feature);
             tension += 1.6 * (currentVolume / 256.f);
+            ribs[feature] -= 99.f * t; // а то накопится
         }
-        averages[feature] = averages[feature] * 0.85 + value * 0.15;
-        averagesDeltasAbs[feature] = averagesDeltasAbs[feature] * 0.85 + delta * 0.15;
+
+        // За секунду фактор падает на ? пунктов
+        ribs[feature] -= t * 0.5f;
+        if (ribs[feature] < -9) ribs[feature] = -9;
     }
     
     if (tension > 1) {
