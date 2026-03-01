@@ -61,6 +61,8 @@ void GameScene::FeaturesCycleResolve(float t) {
 
     if (awaitingRestart) return; // при остановленной музыке проверок быть не должно
 
+    return;
+
     static float prevValues[256];      
     static float ribs[256];   
     static bool  prevRibOrient[256];  

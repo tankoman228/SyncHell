@@ -14,7 +14,7 @@ void main() {
     vec4 down       = texture2D(previousTexture, uv + vec2(0.0, -texel.y));
     vec4 finalColor = down;
 
-    if (uv.y < 0.003) {
+    if (uv.y < 0.1) {
 
         int index = (int(uv.x * 256.0)) % 256; 
         //index = clamp(index, 0, 255);
