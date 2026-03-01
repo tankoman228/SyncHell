@@ -13,7 +13,7 @@ namespace EIF {
 	/// <summary>
 	/// маятниковые рецепторы
 	/// </summary>
-	extern float OUT_Pendulum[256];
+	extern float OUT_Etalon[256];
 
 	/// <summary>
 	/// внутренние рецепторы

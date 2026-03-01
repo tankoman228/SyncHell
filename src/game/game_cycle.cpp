@@ -67,7 +67,7 @@ void GameScene::FeaturesCycleResolve(float t) {
 
     for (int feature = 0; feature < 256; feature++)
     {
-        float value = EIF::OUT_Pendulum[feature];
+        float value = EIF::OUT_Etalon[feature];
         bool ribOr = value > prevValues[feature];
         prevValues[feature] = value;
 
@@ -77,7 +77,7 @@ void GameScene::FeaturesCycleResolve(float t) {
         prevRibOrient[feature] = ribOr;
 
         // важна "ребристость" EIF-граммы. Т.е. чем чаще меняется знак производной, тем лучше
-        if (ribs[feature] > 550.f / value / difficulty) {
+        if (ribs[feature] > 950.f / value / difficulty) {
             FeatureTriggered(value, feature);
             tension += 1.6 * (currentVolume / 256.f);
             ribs[feature] -= 99.f * t; // а то накопится
@@ -125,7 +125,7 @@ void GameScene::VisualCycle(float t) {
         // В цикле:
         nextFrame->clear();
         shader.setUniform("previousTexture", prevFrame->getTexture()); // Передаем старый кадр
-        shader.setUniformArray("spectrum", &EIF::OUT_Pendulum[0], 256);
+        shader.setUniformArray("spectrum", &EIF::OUT_Etalon[0], 256);
         shader.setUniform("deltaTime", t);
         static float tt = 0;
         tt += t;
