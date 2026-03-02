@@ -28,6 +28,7 @@ class GameScene
     sf::Font font;
     sf::Text txtFpsCounter;
     sf::Text txtProgress;
+    sf::Text txtDebug;
     sf::RectangleShape background;
     sf::Shader shader;
 
@@ -65,12 +66,18 @@ class GameScene
     //sf::Sound soundDamage; TODO: добавить
     //sf::Sound soundHeal;
 
-    // Динамические параметры уровня
-    float angleAtack = 0;
-    float speedAtack = 3; // множитель скоростей атаки
-    float decoreR = 128, decoreG = 128, decoreB = 128; // для покраски декораций
-    float tension = 0; // Напряжение, влияет на типы атак. Может колебаться в районе 50, но в жёстких метал партиях и выше 1000, а свыше 1500 сходу достигает только Cynthony
-    float currentVolume = 0;
+    // Динамические параметры звука
+    float tension;   // Напряжение, зависит от объёма выкидываемых снарядов
+    float diversity; // Разнообразие звука, зависит от количества "рёбер"
+    float ambience;  // Зашуслённость, зависимость от суммы всех рецепторов, падение при тишине
+
+    float maxTension;
+    float maxDivercity;
+    float maxAmbience; 
+
+    float avgTension;
+    float avgDivercity;
+    float avgAmbience; 
 
     // инициализация при начале и перерождении
     void SetupLevel();
@@ -91,7 +98,18 @@ private:
 
     bool IsInsideBarrier(const sf::Vector2f &point);
 
-    void FeatureTriggered(float value, int feature);
+    void FeatureTrigger(float value, int feature);
+
+    // Актуальные режимы для игры
+    void (GameScene::*FeatureTriggerCurrentMode)(float value, int feature) = &GameScene::FeatureTriggerMode0;
+    void FeatureTriggerMode0(float value, int feature);
+    void FeatureTriggerMode1(float value, int feature);
+    void FeatureTriggerMode2(float value, int feature);
+    void FeatureTriggerMode3(float value, int feature);
+    void FeatureTriggerMode4(float value, int feature);
+    void FeatureTriggerMode5(float value, int feature);
+    void FeatureTriggerMode6(float value, int feature);
+    void FeatureTriggerMode7(float value, int feature);
 
     // cycle.cpp
     void ProjectilesCycle(float t);

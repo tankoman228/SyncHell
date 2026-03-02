@@ -11,12 +11,22 @@ void GameScene::SetupLevel() {
     // Сброс динамических значений уровня
     playerHealth = 255;
     playerShield = 64;
-    decoreR = 128; decoreG = 128; decoreB = 128; 
-    angleAtack = 0;
+
     tension = 0;
+    diversity = 0;
+    ambience = 0;
+
+    maxTension = 500;   
+    maxDivercity = 500;
+    maxAmbience = 9;  
+
+    avgTension = 9;   
+    avgDivercity = 9;
+    avgAmbience = 900;  
+
     Projectiles.clear();
     barrierRadius = barrierRadiusInitial;
-    speedAtack = 3;
+
     healingReload = 0;
     awaitingRestart = false;
 
@@ -79,6 +89,10 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     txtProgress.setFont(font);
     txtProgress.setPosition(windowSize.x - 80, 10);
     txtProgress.setFillColor(sf::Color::Green);
+
+    txtDebug.setFont(font);
+    txtDebug.setPosition(windowSize.x / 2, 10);
+    txtDebug.setFillColor(sf::Color::Red);
 
     // TODO: придумать, что делать с диаграммой
     // STF::GetSTFVisualized(stf);

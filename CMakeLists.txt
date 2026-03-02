@@ -29,6 +29,14 @@ set(SOURCES
     src/game/game_control.cpp
     src/game/game_init.cpp
     src/game/projectile_spawn.cpp
+    src/game/projectiles_spawn/FeatureTriggerMode0.cpp
+    src/game/projectiles_spawn/FeatureTriggerMode1.cpp
+    src/game/projectiles_spawn/FeatureTriggerMode2.cpp
+    src/game/projectiles_spawn/FeatureTriggerMode3.cpp
+    src/game/projectiles_spawn/FeatureTriggerMode4.cpp
+    src/game/projectiles_spawn/FeatureTriggerMode5.cpp
+    src/game/projectiles_spawn/FeatureTriggerMode6.cpp
+    src/game/projectiles_spawn/FeatureTriggerMode7.cpp
     src/main.cpp
 )
 

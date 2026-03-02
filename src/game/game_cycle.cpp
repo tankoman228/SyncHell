@@ -61,37 +61,10 @@ void GameScene::FeaturesCycleResolve(float t) {
 
     if (awaitingRestart) return; // при остановленной музыке проверок быть не должно
 
-    return;
-
-    static float prevValues[256];      
-    static float ribs[256];   
-    static bool  prevRibOrient[256];  
-
     for (int feature = 0; feature < 256; feature++)
     {
         float value = EIF::OUT_Etalon[feature];
-        bool ribOr = value > prevValues[feature];
-        prevValues[feature] = value;
-
-        if (ribOr != prevRibOrient[feature]) {
-            ribs[feature] += 3.f * t;
-        }
-        prevRibOrient[feature] = ribOr;
-
-        // важна "ребристость" EIF-граммы. Т.е. чем чаще меняется знак производной, тем лучше
-        if (ribs[feature] > 950.f / value / difficulty) {
-            FeatureTriggered(value, feature);
-            tension += 1.6 * (currentVolume / 256.f);
-            ribs[feature] -= 99.f * t; // а то накопится
-        }
-
-        // За секунду фактор падает на ? пунктов
-        ribs[feature] -= t * 0.5f;
-        if (ribs[feature] < -9) ribs[feature] = -9;
-    }
-    
-    if (tension > 1) {
-        tension -= t * tension / 2.f; // за 2 секунды при отсутствии триггеров напряжение упадёт до нуля
+        FeatureTrigger(value, feature);
     }
 }
 
@@ -103,7 +76,7 @@ bool buffersInitialized = false;
 void GameScene::VisualCycle(float t) {
 
     // барьер поля
-    barrier.setOutlineColor(sf::Color(255, 0, 255.f - currentVolume));
+    barrier.setOutlineColor(sf::Color(255, 0, ambience / maxAmbience * 254.f));
     barrier.setRadius(barrierRadius);
     barrier.setOrigin(barrierRadius, barrierRadius); // Центрируем
     barrier.setPosition(barrierCenter);
@@ -160,6 +133,7 @@ void GameScene::VisualCycle(float t) {
     window->draw(shielbar);
     window->draw(txtFpsCounter);
     window->draw(txtProgress);
+    window->draw(txtDebug);
 }
 
 const int delayBeforeRestartSeconds = 5;
@@ -169,24 +143,130 @@ void GameScene::Cycle(float t) {
 
     HandleInput(t); // WASD
 
-    // Вычисляем текущий индекс
+    // Вычисляем текущий индекс и прогоняем рецепторы (реальное время)
     int rawSoundIndexEnd = std::min(rawSound.size() - 1, ulong(music.getPlayingOffset().asSeconds() * 44100.f));
     if (rawSoundPrevIndex < rawSoundIndexEnd) EIF::Cycle(&rawSound, rawSoundPrevIndex + 1, rawSoundIndexEnd);
     rawSoundPrevIndex = rawSoundIndexEnd;
 
-    /*
-    for (int i = 0; i < 256; i++) {
-        std::cout << int(EIF::OUT_Pendulum[i]) << " ";
+    { 
+        bool alreadyTriggered = false; // для подсчёта пиков, опорный флаг
+
+        // Вычисляем игровые параметры
+        for (int i = 0; i < 256; i++) {
+
+            float value = EIF::OUT_Etalon[i];
+
+            ambience += value / 256.f * t; // насыщеннее звук = больше чувствуется фон, больше шумов
+
+            if (value > 180.f) {
+                // чтобы подсчитать количество пиков надо найти те моменты, когда есть "яркая вспышка"
+                // считаются именно очень яркие пики. Полосатость, тигринный коэффициент, его бы довести до ума
+                if (!alreadyTriggered) {
+                    diversity += std::sqrt(value) * t;
+                    alreadyTriggered = true;
+                }
+            }
+            else {
+                alreadyTriggered = false; 
+            }
+        }
+
+        // tension считается не тут. Важно плавное затухание всех параметров
+        tension   -= t * tension   / 3.f; 
+        diversity -= t * diversity / 3.f; 
+        ambience  -= t * ambience  / 3.f; 
+
+        // пусть максимумы плавают
+        maxTension   -= t * maxTension   / 400.f; 
+        maxDivercity -= t * maxDivercity / 400.f; 
+        maxAmbience  -= t * maxAmbience  / 400.f; 
+
+        if (tension > maxTension)     maxTension   = tension;
+        if (diversity > maxDivercity) maxDivercity = diversity; 
+        if (ambience > maxAmbience)   maxAmbience  = ambience;
+        
+        const float avgCoef = 0.1f;
+
+        avgTension   = avgTension   * (1.f - t * avgCoef) + tension   * t * avgCoef;
+        avgDivercity = avgDivercity * (1.f - t * avgCoef) + diversity * t * avgCoef;
+        avgAmbience  = avgAmbience  * (1.f - t * avgCoef) + ambience  * t * avgCoef;
     }
-    std::cout << "\n";
-    */
-    currentVolume = 128.f; // TODO: прописать
-    
+
+    // Теперь выбираем метод, который будет квадрилион раз в секунду вызывать. Это "режим" игры, т.е. как именно снаряды будут спанвиться
+    {
+        std::cout << tension << ' ' << diversity << ' ' << ambience << '\n' ;
+
+        //bool TEN_SMALL = tension   < (avgTension   + maxTension  ) / 2.f;
+        //bool DIV_SMALL = diversity < (avgDivercity + maxDivercity) / 2.f;
+        //bool AMB_SMALL = ambience  < (avgAmbience  + maxAmbience ) / 2.f;
+
+
+        /*
+        
+        // Режим не зависит от того, какая там мелодия, если только не совсем всё тихо. Главное - поймать дроп
+        mode += (fmaxf(0, tension    - avgTension)    / (maxTension    - avgTension))    * 33.f;
+        mode += (fmaxf(0, diversity  - avgDivercity)  / (maxDivercity  - avgDivercity))  * 33.f;
+        mode += (fmaxf(0, ambience   - avgAmbience)   / (maxAmbience   - avgAmbience))   * 34.f;
+
+        float t = mode / 100.f; // 0..1
+        float result = std::pow(t, 0.01) * 7.f; // 0..7, но возрастает иначе. Да, 1^? = 1, степень позволит снижать
+        */
+
+        switch (int((ambience + diversity + tension) / (maxAmbience + maxDivercity + maxTension) * 8.f)) // TODO: я так и не смог придумать, как правильно выбирать режимы
+        {
+            case 0: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode0; break;
+            case 1: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode1; break;
+            case 2: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode2; break;
+            case 3: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode3; break;
+            case 4: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode4; break;
+            case 5: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode5; break; 
+            case 6: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode6; break;
+            case 7: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode7; break;
+        }
+        /*
+        if (TEN_SMALL) {
+            if (DIV_SMALL) {
+                if (AMB_SMALL) {
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode0;
+                }
+                else {
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode1;
+                }
+            }
+            else {
+                if (AMB_SMALL) {
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode2;
+                }
+                else {
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode3;
+                }
+            }
+        }
+        else {
+            if (DIV_SMALL) {
+                if (AMB_SMALL) {
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode4;
+                }
+                else {
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode5;
+                }
+            }
+            else {
+                if (AMB_SMALL) {
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode6;
+                }
+                else {
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode7;
+                }
+            }
+        }*/
+    }
+
+
     FeaturesCycleResolve(t); // спавнит снаряды, но только когда проверит, что динамика трека подходит
     ProjectilesCycle(t);     // цикл самих снарядов, их деспавна и движения
 
     // Просто изменения динамических параметров
-    angleAtack += t * 9;
     healingReload -= t * 1.5;
 
     // если не запущен счётчик ожидания рестарта уровня

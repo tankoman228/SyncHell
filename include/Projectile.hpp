@@ -37,7 +37,7 @@ struct ProjectileTriangle : Projectile
         shape.setPosition(position);
         shape.setOutlineColor(sf::Color(240,240,240));
 
-        damage = 10;
+        damage = 0.1; // TODO: подобрать значение после перестройки всего и вся
         this->speed = speed;
     }
 
