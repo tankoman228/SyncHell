@@ -45,22 +45,17 @@ double Etalon_max_cor[256];
 // Нормализация амплитуды входа (адаптивная)
 double InputEnergy[256] = { 1e-9 };
 
-// Меньше значение → RMS адаптируется быстрее → сигнал нормализуется быстрее → пики контрастнее
-// Больше значение → RMS меняется медленно → фон «забивает» маленькие пики, низкие частоты слишком чувствительные
-const double InputEnergyDecay = 0.9995;
-
-// Меньше значение → быстрее реагирует и быстрее забывает
-const double Etalon_decay = 0.9995; 
+double Etalon_decay_per_sample[256];
 
 // модель конкретрно для пружинных маятников, F - сила, i - номер маятника
 inline void EtalonTick(float F, int i)
 {
     // --- обновляем энергию входа (для нормализации громкости) ---
-    InputEnergy[i] = InputEnergy[i] * InputEnergyDecay + F * F * (1.0 - InputEnergyDecay);
+    InputEnergy[i] = InputEnergy[i] * Etalon_decay_per_sample[i] + F * F * (1.0 - Etalon_decay_per_sample[i]);
 
     // --- квадратурная корреляция ---
-    Etalon_I[i] = Etalon_I[i] * Etalon_decay + F * Etalon_cos_state[i];
-    Etalon_Q[i] = Etalon_Q[i] * Etalon_decay + F * Etalon_sin_state[i];
+    Etalon_I[i] = Etalon_I[i] * Etalon_decay_per_sample[i] + F * Etalon_cos_state[i];
+    Etalon_Q[i] = Etalon_Q[i] * Etalon_decay_per_sample[i] + F * Etalon_sin_state[i];
 
     // --- вычисляем мощность (фаза-инвариантно) ---
     double power = Etalon_I[i] * Etalon_I[i] + Etalon_Q[i] * Etalon_Q[i];
@@ -135,6 +130,12 @@ void EIF::InitParams() {
         Etalon_Q[i] = 0.0;
 
         Etalon_max_cor[i] = 32;
+
+        double timeConstant_ms = 30.0; // Базовая постоянная времени в мс
+        double samplesPerPeriod = sampleRate / frequency;
+        // Чем ниже частота, тем больше периодов нужно для того же времени
+        double decayPerSample = exp(-1.0 / (timeConstant_ms * 0.001 * sampleRate));
+        Etalon_decay_per_sample[i] = decayPerSample;
     }
 }
 
