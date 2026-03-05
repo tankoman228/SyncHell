@@ -27,6 +27,14 @@
     <ClCompile Include="src\game\game_cycle.cpp" />
     <ClCompile Include="src\game\game_control.cpp" />
     <ClCompile Include="src\game\game_init.cpp" />
+    <ClCompile Include="src\game\projectiles_spawn\FeatureTriggerMode0.cpp" />
+    <ClCompile Include="src\game\projectiles_spawn\FeatureTriggerMode1.cpp" />
+    <ClCompile Include="src\game\projectiles_spawn\FeatureTriggerMode2.cpp" />
+    <ClCompile Include="src\game\projectiles_spawn\FeatureTriggerMode3.cpp" />
+    <ClCompile Include="src\game\projectiles_spawn\FeatureTriggerMode4.cpp" />
+    <ClCompile Include="src\game\projectiles_spawn\FeatureTriggerMode5.cpp" />
+    <ClCompile Include="src\game\projectiles_spawn\FeatureTriggerMode6.cpp" />
+    <ClCompile Include="src\game\projectiles_spawn\FeatureTriggerMode7.cpp" />
     <ClCompile Include="src\game\projectile_spawn.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>

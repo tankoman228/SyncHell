@@ -8,7 +8,7 @@ void GameScene::FeatureTriggerMode1(float value, int feature) {
     static bool TriggeredAlready[256] = {0};
     if (value > 250) {
         if (!TriggeredAlready[feature]) {
-            TriggeredAlready[feature] = 1; tension += value;
+            TriggeredAlready[feature] = 1;
         }
         else {
             return;

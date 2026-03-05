@@ -66,19 +66,6 @@ class GameScene
     //sf::Sound soundDamage; TODO: добавить
     //sf::Sound soundHeal;
 
-    // Динамические параметры звука
-    float tension;   // Напряжение, зависит от объёма выкидываемых снарядов
-    float diversity; // Разнообразие звука, зависит от количества "рёбер"
-    float ambience;  // Зашуслённость, зависимость от суммы всех рецепторов, падение при тишине
-
-    float maxTension;
-    float maxDivercity;
-    float maxAmbience; 
-
-    float avgTension;
-    float avgDivercity;
-    float avgAmbience; 
-
     // инициализация при начале и перерождении
     void SetupLevel();
 

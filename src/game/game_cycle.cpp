@@ -76,7 +76,7 @@ bool buffersInitialized = false;
 void GameScene::VisualCycle(float t) {
 
     // барьер поля
-    barrier.setOutlineColor(sf::Color(255, 0, ambience / maxAmbience * 254.f));
+    barrier.setOutlineColor(sf::Color(255, 0, 254.f));
     barrier.setRadius(barrierRadius);
     barrier.setOrigin(barrierRadius, barrierRadius); // Центрируем
     barrier.setPosition(barrierCenter);
@@ -144,57 +144,64 @@ void GameScene::Cycle(float t) {
     HandleInput(t); // WASD
 
     // Вычисляем текущий индекс и прогоняем рецепторы (реальное время)
-    int rawSoundIndexEnd = std::min(rawSound.size() - 1, ulong(music.getPlayingOffset().asSeconds() * 44100.f));
+    int rawSoundIndexEnd = std::min((long)rawSound.size() - 1, (long)(music.getPlayingOffset().asSeconds() * 44100.f));
     if (rawSoundPrevIndex < rawSoundIndexEnd) EIF::Cycle(&rawSound, rawSoundPrevIndex + 1, rawSoundIndexEnd);
     rawSoundPrevIndex = rawSoundIndexEnd;
 
+    // логика переключения режимой
     { 
-        bool alreadyTriggered = false; // для подсчёта пиков, опорный флаг
+        // каждую секунду накапливается энергия в этих параметрах
+        static double 
+            ambience = 0,  // энергия из фона (не пиков)
+            diversity = 0, // от количества пиков, а не их размера
+            tension = 0,   // суммарный объём пиков
+            dynamics = 0,  // суммарная дельта по рецепторам за секунду
+            
+            timer = 0;
+        static float prev[256] = {0};
 
-        // Вычисляем игровые параметры
+        bool alreadyTriggered = false; 
         for (int i = 0; i < 256; i++) {
+            float value = EIF::OUT_Etalon[i]; // значенеи с музыкального рецептора
 
-            float value = EIF::OUT_Etalon[i];
-
-            ambience += value / 256.f * t; // насыщеннее звук = больше чувствуется фон, больше шумов
-
-            if (value > 180.f) {
+            if (value > 220.f) {
                 // чтобы подсчитать количество пиков надо найти те моменты, когда есть "яркая вспышка"
                 // считаются именно очень яркие пики. Полосатость, тигринный коэффициент, его бы довести до ума
                 if (!alreadyTriggered) {
-                    diversity += std::sqrt(value) * t;
+                    diversity += t * 64.f;
                     alreadyTriggered = true;
                 }
+                tension += std::sqrt(value) * t;
             }
             else {
                 alreadyTriggered = false; 
+                ambience += std::sqrt(value) * t; // насыщеннее звук = больше чувствуется фон, больше шумов
             }
+
+            dynamics += std::abs(prev[i] - value) * t;
+            prev[i] = value;
         }
 
-        // tension считается не тут. Важно плавное затухание всех параметров
-        tension   -= t * tension   / 3.f; 
-        diversity -= t * diversity / 3.f; 
-        ambience  -= t * ambience  / 3.f; 
+        timer += t;
+        if (timer > 1.f) {
 
-        // пусть максимумы плавают
-        maxTension   -= t * maxTension   / 400.f; 
-        maxDivercity -= t * maxDivercity / 400.f; 
-        maxAmbience  -= t * maxAmbience  / 400.f; 
+            ambience  /= 220 * 16; 
+            diversity /= 32 * 256;
+            tension   /= 16 * 256;
+            dynamics  /= 256 * 128;
 
-        if (tension > maxTension)     maxTension   = tension;
-        if (diversity > maxDivercity) maxDivercity = diversity; 
-        if (ambience > maxAmbience)   maxAmbience  = ambience;
-        
-        const float avgCoef = 0.1f;
+            std::cout << ambience << "\t" << diversity << "\t" << tension << "\t" << dynamics << "\n";
 
-        avgTension   = avgTension   * (1.f - t * avgCoef) + tension   * t * avgCoef;
-        avgDivercity = avgDivercity * (1.f - t * avgCoef) + diversity * t * avgCoef;
-        avgAmbience  = avgAmbience  * (1.f - t * avgCoef) + ambience  * t * avgCoef;
+            ambience = 0; 
+            diversity = 0; 
+            tension = 0; 
+            dynamics = 0;
+            timer = 0;
+        }
     }
 
     // Теперь выбираем метод, который будет квадрилион раз в секунду вызывать. Это "режим" игры, т.е. как именно снаряды будут спанвиться
     {
-        std::cout << tension << ' ' << diversity << ' ' << ambience << '\n' ;
 
         //bool TEN_SMALL = tension   < (avgTension   + maxTension  ) / 2.f;
         //bool DIV_SMALL = diversity < (avgDivercity + maxDivercity) / 2.f;
@@ -212,7 +219,7 @@ void GameScene::Cycle(float t) {
         float result = std::pow(t, 0.01) * 7.f; // 0..7, но возрастает иначе. Да, 1^? = 1, степень позволит снижать
         */
 
-        switch (int((ambience + diversity + tension) / (maxAmbience + maxDivercity + maxTension) * 8.f)) // TODO: я так и не смог придумать, как правильно выбирать режимы
+        switch (0) // TODO: я так и не смог придумать, как правильно выбирать режимы
         {
             case 0: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode0; break;
             case 1: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode1; break;

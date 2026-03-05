@@ -12,18 +12,6 @@ void GameScene::SetupLevel() {
     playerHealth = 255;
     playerShield = 64;
 
-    tension = 0;
-    diversity = 0;
-    ambience = 0;
-
-    maxTension = 500;   
-    maxDivercity = 500;
-    maxAmbience = 9;  
-
-    avgTension = 9;   
-    avgDivercity = 9;
-    avgAmbience = 900;  
-
     Projectiles.clear();
     barrierRadius = barrierRadiusInitial;
 
