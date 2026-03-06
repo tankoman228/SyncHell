@@ -59,8 +59,10 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     music.openFromFile("levels/" + level);
 
     // Далее спрайты и т.п.
-    sf::Vector2u windowSize = window->getSize();
-    barrierCenterInitial = sf::Vector2f(windowSize.x / 2.0f, windowSize.y / 2.0f);
+    windowWidth = window->getSize().x;
+    windowHeight = window->getSize().y;
+
+    barrierCenterInitial = sf::Vector2f(windowWidth / 2.0f, windowHeight / 2.0f);
 
     // Инициализация игрока
     player = sf::RectangleShape(sf::Vector2f(playerSize, playerSize));
@@ -75,11 +77,11 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     txtFpsCounter.setFillColor(sf::Color::Green);
 
     txtProgress.setFont(font);
-    txtProgress.setPosition(windowSize.x - 80, 10);
+    txtProgress.setPosition(windowWidth - 80, 10);
     txtProgress.setFillColor(sf::Color::Green);
 
     txtDebug.setFont(font);
-    txtDebug.setPosition(windowSize.x / 2, 10);
+    txtDebug.setPosition(windowWidth / 2, 10);
     txtDebug.setFillColor(sf::Color::Red);
 
     // TODO: придумать, что делать с диаграммой

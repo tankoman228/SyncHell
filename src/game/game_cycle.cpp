@@ -3,7 +3,7 @@
 
 char strFormatBuf[64]; // ТОЛЬКО ДЛЯ ОСНОВНОГО ПОТОКА, МЕЛКИЕ СТРОКИ
 
-void GameScene::ProjectilesCycle(float t) {
+void GameScene::ProjectilesCycle() {
 
     int spawnDamageAura = 0;
     int spawnHealAura = 0;
@@ -45,7 +45,7 @@ void GameScene::ProjectilesCycle(float t) {
         }
         else Projectiles[i]->shape.setOutlineThickness(0.f);
 
-        Projectiles[i]->Cycle(t);
+        Projectiles[i]->Cycle(dt);
     }
 
     // Чтобы перераспределение памяти не привело к ошыбке
@@ -57,7 +57,7 @@ void GameScene::ProjectilesCycle(float t) {
     }
 }
 
-void GameScene::FeaturesCycleResolve(float t) {
+void GameScene::FeaturesCycleResolve() {
 
     if (awaitingRestart) return; // при остановленной музыке проверок быть не должно
 
@@ -73,7 +73,7 @@ sf::RenderTexture* prevFrame;
 sf::RenderTexture* nextFrame;
 bool buffersInitialized = false;
 
-void GameScene::VisualCycle(float t) {
+void GameScene::VisualCycle() {
 
     // барьер поля
     barrier.setOutlineColor(sf::Color(255, 0, 254.f));
@@ -101,9 +101,9 @@ void GameScene::VisualCycle(float t) {
         nextFrame->clear();
         shader.setUniform("previousTexture", prevFrame->getTexture()); // Передаем старый кадр
         shader.setUniformArray("spectrum", &EIF::OUT_Etalon[0], 256);
-        shader.setUniform("deltaTime", t);
+        shader.setUniform("deltaTime", dt);
         static float tt = 0;
-        tt += t;
+        tt += dt;
         shader.setUniform("time", tt);
 
         nextFrame->clear();
@@ -124,7 +124,7 @@ void GameScene::VisualCycle(float t) {
     }
 
     // счётчик FPS
-    snprintf(strFormatBuf, sizeof(strFormatBuf), "%d FPS", int(1.f / t));
+    snprintf(strFormatBuf, sizeof(strFormatBuf), "%d FPS", int(1.f / dt));
     txtFpsCounter.setString(strFormatBuf);
 
     // Отрисовка
@@ -139,9 +139,10 @@ void GameScene::VisualCycle(float t) {
 const int delayBeforeRestartSeconds = 5;
 float delayBeforeRestartCounter = 9999; // время до рестарта уровня, при активации в delayBeforeRestartSeconds частично останавливает игру
 
-void GameScene::Cycle(float t) {
+void GameScene::Cycle(float dt) {
 
-    HandleInput(t); // WASD
+    this->dt = dt;
+    HandleInput(); // WASD
 
     // Вычисляем текущий индекс и прогоняем рецепторы (реальное время)
     int rawSoundIndexEnd = std::min((long)rawSound.size() - 1, (long)(music.getPlayingOffset().asSeconds() * 44100.f));
@@ -172,23 +173,23 @@ void GameScene::Cycle(float t) {
                 // чтобы подсчитать количество пиков надо найти те моменты, когда есть "яркая вспышка"
                 // считаются именно очень яркие пики. Полосатость, тигринный коэффициент, его бы довести до ума
                 if (!alreadyTriggered) {
-                    diversity += t * 64.f;
+                    diversity += dt * 64.f;
                     alreadyTriggered = true;
                 }
 
-                if (i < 64) bass += value * value * t;
-                melody += value * value * t;
+                if (i < 64) bass += value * value * dt;
+                melody += value * value * dt;
             }
             else {
                 alreadyTriggered = false; 
-                ambience += std::sqrt(value) * t; // насыщеннее звук = больше чувствуется фон, больше шумов
+                ambience += std::sqrt(value) * dt; // насыщеннее звук = больше чувствуется фон, больше шумов
             }
 
-            dynamics += std::abs(prev[i] - value) * t;
+            dynamics += std::abs(prev[i] - value) * dt;
             prev[i] = value;
         }
 
-        timer += t;
+        timer += dt;
         if (timer > 1.f) {
 
             // Нормализайция
@@ -229,14 +230,62 @@ void GameScene::Cycle(float t) {
             // Выбор режима
             switch ((int)std::round(mediator * triggerSum))
             {
-                case 0: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode0; break;
-                case 1: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode1; break;
-                case 2: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode2; break;
-                case 3: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode3; break;
-                case 4: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode4; break;
-                case 5: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode5; break;
-                case 6: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode6; break;
-                case 7: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode7; break;
+                case 0: 
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode0; 
+                    
+                    minTriggeredValue = 253;
+                    cooldownTime = 0.6;
+
+                    break;
+                case 1: 
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode1;     
+                    
+                    minTriggeredValue = 253;
+                    cooldownTime = 0.5; 
+
+                    break;
+                case 2: 
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode2;    
+                    
+                    minTriggeredValue = 254;
+                    cooldownTime = 0.9; 
+
+                    break;
+                case 3: 
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode3;     
+                    
+                    minTriggeredValue = 254;
+                    cooldownTime = 0.7; 
+
+                    break;
+                case 4: 
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode4;     
+                    
+                    minTriggeredValue = 245;
+                    cooldownTime = 0.6; 
+
+                    break;
+                case 5: 
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode5;     
+                    
+                    minTriggeredValue = 253;
+                    cooldownTime = 0.7; 
+
+                    break;
+                case 6: 
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode6;     
+                    
+                    minTriggeredValue = 253;
+                    cooldownTime = 0.6; 
+
+                    break;
+                case 7: 
+                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode7;     
+                    
+                    minTriggeredValue = 253;
+                    cooldownTime = 0.5; 
+
+                    break;
             }
 
             // Следующая секунда тоже начинает с нуля!
@@ -250,11 +299,25 @@ void GameScene::Cycle(float t) {
     }
 
 
-    FeaturesCycleResolve(t); // спавнит снаряды, но только когда проверит, что динамика трека подходит
-    ProjectilesCycle(t);     // цикл самих снарядов, их деспавна и движения
+    FeaturesCycleResolve(); // спавнит снаряды, но только когда проверит, что динамика трека подходит
+    ProjectilesCycle();     // цикл самих снарядов, их деспавна и движения
 
     // Просто изменения динамических параметров
-    healingReload -= t * 1.5;
+    healingReload -= dt;
+
+    if (healingReload < 0) {
+        healingReload = 10;
+
+        float Radius = 300.0f;
+        float AngleRad = Rotator * (3.14159f / 180.0f);
+
+        Vector2f TangentDir = Vector2f(cos(AngleRad), sin(AngleRad));
+        Vector2f RadialDir = Vector2f(-TangentDir.y, TangentDir.x);
+        Vector2f ContactPoint = barrierCenter + RadialDir * Radius;
+
+        auto hl = new ProjectileHealingLazer(0.8f * ContactPoint + 0.2f * player.getPosition(), Rotator * 320.f, 8, 0);
+        Projectiles.push_back(hl);
+    }
 
     // если не запущен счётчик ожидания рестарта уровня
     if (!awaitingRestart) {
@@ -272,7 +335,7 @@ void GameScene::Cycle(float t) {
             std::cout << "Player is dead, await restart\n";
         }
         else if (playerShield < 64) {
-            playerShield += t * 20;
+            playerShield += dt * 20;
             playerShield = playerShield > 64 ? 64 : playerShield;
         }
     }
@@ -282,7 +345,7 @@ void GameScene::Cycle(float t) {
 
         std::cout << "restart await counter: " << delayBeforeRestartCounter << "\n";
         
-        delayBeforeRestartCounter -= t;
+        delayBeforeRestartCounter -= dt;
 
         if (delayBeforeRestartCounter < 4) {
             music.setVolume(std::max(2.f, delayBeforeRestartCounter * 10.f));
@@ -299,5 +362,5 @@ void GameScene::Cycle(float t) {
         }
     }
 
-    VisualCycle(t);
+    VisualCycle();
 }

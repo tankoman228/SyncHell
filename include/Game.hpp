@@ -40,6 +40,9 @@ class GameScene
     const int spectroFramesInStfFrame = 16; // т.е. если секунда делится на 512 сегментов, число делим на 16 и получаем 32 кадра в секунду
     const int spectroHeight = 384; // Не трогать, а если и трогать, то поменять один массив в cl файле!
     
+    float windowWidth;
+    float windowHeight;
+
     // временно отключено для теста EIF float avgVolume = 0; // от 0 до 255
     float musicDurationSeconds = 0; 
     float difficulty = 1; // преобразованное уже конструктором до дроби, всегда больше нуля
@@ -50,6 +53,12 @@ class GameScene
     float playerShield = 64;
     float healingReload = 0;
     bool awaitingRestart = false;
+    float dt = 0;
+    float Rotator = 0; // вращение углов атаки спавнеров частиц
+
+    // параметры режима
+    float minTriggeredValue = 255;
+    float cooldownTime = 0;
 
     // Векторные объекты
     sf::Vector2f barrierCenterInitial;
@@ -78,10 +87,10 @@ public:
     }
 
     /* вызывается до display и после clear*/
-    void Cycle(float t);
+    void Cycle(float dt);
 
 private:
-    void HandleInput(float t);
+    void HandleInput();
 
     bool IsInsideBarrier(const sf::Vector2f &point);
 
@@ -99,9 +108,9 @@ private:
     void FeatureTriggerMode7(float value, int feature);
 
     // cycle.cpp
-    void ProjectilesCycle(float t);
-    void FeaturesCycleResolve(float t);
-    void VisualCycle(float t);
+    void ProjectilesCycle();
+    void FeaturesCycleResolve();
+    void VisualCycle();
 
     // game_init.cpp
     void LoadFromFile(std::string level);

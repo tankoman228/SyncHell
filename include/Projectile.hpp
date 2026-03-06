@@ -37,7 +37,7 @@ struct ProjectileTriangle : Projectile
         shape.setPosition(position);
         shape.setOutlineColor(sf::Color(240,240,240));
 
-        damage = 0.1; // TODO: подобрать значение после перестройки всего и вся
+        damage = 5;
         this->speed = speed;
     }
 
@@ -73,7 +73,18 @@ struct ProjectilePentagon : Projectile
     virtual void Cycle(float t) {
 
         auto pos = shape.getPosition();
-        shape.setFillColor(sf::Color(int(pos.x) % 128 + 128, 255 - lifeTime * 50, 255 - lifeTime * 50));
+
+        // 1. Плавный перелив (от 128 до 255) за счет синуса времени
+        // Скорость перелива регулируется множителем внутри sin (например, 3.0f)
+        int dynamicRed = 128 + static_cast<int>(63.5f * (1.0f + std::sin(lifeTime * 3.0f)));
+
+        // 2. Синее смещение к концу жизни
+        // lifeTime увеличивается -> зеленый падает, синий остается или растет
+        // Ограничиваем через std::max, чтобы не уйти в отрицательные значения
+        int green = std::max(0, 255 - static_cast<int>(lifeTime * 80));
+        int blue = 255; // Оставляем максимум для выраженного синего финала
+
+        shape.setFillColor(sf::Color(dynamicRed, green, blue));
 
         shape.move(speed * t);
         speed.y += t * 600;
@@ -255,6 +266,8 @@ struct ProjectileLazer : Projectile
         }
         else {
             isCollidable = false;
+            speed = sf::Vector2f(0,0);
+            rSpeed = 0;
             shape.scale(1, 1 - dt * 7.f);
             shape.setFillColor(sf::Color(64, 0, 0, 200));
             shape.setOutlineColor(sf::Color(255, 255, 255, 254.f * shape.getScale().y));

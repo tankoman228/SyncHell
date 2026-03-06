@@ -13,7 +13,7 @@ bool GameScene::IsInsideBarrier(const sf::Vector2f &point)
     return distance < (barrierRadius - playerHalfSize);
 }
 
-void GameScene::HandleInput(float t)
+void GameScene::HandleInput()
 {
     auto playerNewC = player.getPosition();
 
@@ -21,12 +21,12 @@ void GameScene::HandleInput(float t)
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ||
         sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
-        playerNewC.x -= playerSpeed * t;
+        playerNewC.x -= playerSpeed * dt;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ||
         sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
-        playerNewC.x += playerSpeed * t;
+        playerNewC.x += playerSpeed * dt;
     }
 
     if (IsInsideBarrier(playerNewC))
@@ -37,12 +37,12 @@ void GameScene::HandleInput(float t)
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) ||
         sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {
-        playerNewC.y -= playerSpeed * t;
+        playerNewC.y -= playerSpeed * dt;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) ||
         sf::Keyboard::isKeyPressed(sf::Keyboard::S))
     {
-        playerNewC.y += playerSpeed * t;
+        playerNewC.y += playerSpeed * dt;
     }
 
     if (IsInsideBarrier(playerNewC))

@@ -4,42 +4,83 @@
 // Активность выше среднего, басов хватает
 void GameScene::FeatureTriggerMode5(float value, int feature) {
     
-    // TODO: удалить затычку и сделать реальную логику
-    
-    static bool TriggeredAlready[256] = {0};
-    if (value > 250) {
-        if (!TriggeredAlready[feature]) {
-            TriggeredAlready[feature] = 1;
+    txtDebug.setString("Mode 5"); // TODO: ревью, написан ИИ
+
+    if (feature < 30) {
+        // Быстрые лазеры-кресты
+        for (int i = 0; i < 3; i++) {
+            float angle = Rotator + feature * 2 + i * 120;
+            auto projectile = new ProjectileLazer(
+                player.getPosition(),
+                angle,
+                feature % 15 + 5,
+                feature % 5 - 2
+            );
+            Projectiles.push_back(projectile);
         }
-        else {
-            return;
+    }
+    else if (feature < 60) {
+        // Взрывные пятиугольники с ускорением
+        float baseAngle = (feature / 256.f * 360.f) * M_PI / 180.0f;
+
+        for (int i = -1; i <= 1; i++) {
+            float angle = baseAngle + i * 0.3f;
+            float distance = barrierRadius + 150.0f;
+
+            sf::Vector2f position(
+                barrierCenter.x + distance * cos(angle),
+                barrierCenter.y + distance * sin(angle)
+            );
+
+            sf::Vector2f toPlayer = player.getPosition() - position;
+            float length = sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
+            sf::Vector2f velocity = (toPlayer / length) * (400.0f + feature * 2);
+
+            auto projectile = new ProjectilePentagon(
+                position,
+                velocity,
+                15.0f + (feature % 10),
+                Rotator * 2 + feature * 5
+            );
+            Projectiles.push_back(projectile);
         }
+    }
+    else if (feature < 100) {
+        // Шестиугольники-волны сверху и снизу
+        bool fromTop = feature % 2 == 0;
+        float y = fromTop ? -50.0f : windowHeight + 50.0f;
+        float x = (feature % 100) * (windowWidth / 100.0f);
+
+        sf::Vector2f toPlayer = player.getPosition() - sf::Vector2f(x, y);
+        float length = sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
+        sf::Vector2f baseVelocity = (toPlayer / length) * 550.0f;
+
+        // Добавляем горизонтальное колебание
+        sf::Vector2f velocity = baseVelocity +
+            sf::Vector2f(sin(feature * 0.1f) * 200.0f, 0);
+
+        auto projectile = new ProjectileHexagon(
+            sf::Vector2f(x, y),
+            velocity,
+            22.0f + (feature % 12),
+            Rotator * 3 + feature * 2
+        );
+        Projectiles.push_back(projectile);
     }
     else {
-        TriggeredAlready[feature] = 0;
-        return; // не триггерится же
+        // Спиральные с изменяющимся радиусом (быстрая спираль)
+        float baseAngle = (Rotator / 20.0f + feature * 3) * M_PI / 180.0f;
+        float startRadius = barrierRadius + 100.0f;
+
+        auto projectile = new ProjectileSpiralMove(
+            barrierCenter,
+            sf::Color(255, 100 + feature % 155, 50),
+            8 + (feature % 10),
+            startRadius,
+            baseAngle
+        );
+        // Увеличиваем скорость вращения
+        projectile->angleSpeed = 8.0f;
+        Projectiles.push_back(projectile);
     }
-
-    txtDebug.setString("Mode 5"); return;
-
-    // Большие, красно синие
-    float angleRad = (feature / 256.f * 360.f) * 3.14159265f / 180.0f ;
-    float distance = barrierRadius + 180.0f;
-
-    sf::Vector2f position(
-        barrierCenter.x + distance * cos(angleRad),
-        barrierCenter.y + distance * sin(angleRad)
-    );
-
-    // Направление
-    sf::Vector2f direction = player.getPosition() - position;
-
-    float length = sqrt(direction.x * direction.x + direction.y * direction.y);
-    sf::Vector2f velocity = (direction / length) * 240.f;
-
-    Projectile* projectile = nullptr;
-    projectile = new ProjectileTriangle(position, velocity, sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0), feature / 256.f * 360.f);
-    projectile->shape.setScale(6, 6);
-
-    if (projectile != nullptr) Projectiles.push_back(projectile);
 }

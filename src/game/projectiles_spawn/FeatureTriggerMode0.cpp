@@ -4,44 +4,42 @@
 // Характерен для тихих и ненасыщенных мелодий, звуков. Количество триггеров минимально
 void GameScene::FeatureTriggerMode0(float value, int feature) {
     
-    // TODO: удалить затычку и сделать реальную логику
-
-    static bool TriggeredAlready[256] = {0};
-    if (value > 250) {
-        if (!TriggeredAlready[feature]) {
-            TriggeredAlready[feature] = 1; 
-        }
-        else {
-            return;
-        }
-    }
-    else {
-        TriggeredAlready[feature] = 0;
-        return; // не триггерится же
-    }
-
     txtDebug.setString("Mode 0");
 
-    return;
+    if (feature < 35) {
+        // Лазеры
+        auto projectile = new ProjectileLazer(player.getPosition(), Rotator + feature, 10, (feature % 7 - 3));
+        Projectiles.push_back(projectile);
+    }
+    if (feature < 55) {
 
-    // Большие, красно синие
-    float angleRad = (feature / 256.f * 360.f) * 3.14159265f / 180.0f ;
-    float distance = barrierRadius + 180.0f;
+        // Спиральные
+        float r = std::max((feature - 25) * 5.f, 250.f);
+        float g = std::max((feature - 25) * 5.f, 250.f);
+        int b = feature % 2 == 0 ? 128 : 255;
 
-    sf::Vector2f position(
-        barrierCenter.x + distance * cos(angleRad),
-        barrierCenter.y + distance * sin(angleRad)
-    );
+        auto projectile = new ProjectileSpiralMove(barrierCenter, sf::Color(r, g, b), 10, barrierRadius + 100, Rotator + feature / 20.f);
+        Projectiles.push_back(projectile);
+    }
+    else {
+        // Большие, красно синие
+        float angleRad = (feature / 256.f * 360.f) * 3.14159265f / 180.0f;
+        float distance = barrierRadius + 180.0f;
 
-    // Направление
-    sf::Vector2f direction = player.getPosition() - position;
+        sf::Vector2f position(
+            barrierCenter.x + distance * cos(angleRad),
+            barrierCenter.y + distance * sin(angleRad)
+        );
 
-    float length = sqrt(direction.x * direction.x + direction.y * direction.y);
-    sf::Vector2f velocity = (direction / length) * 240.f;
+        // Направление
+        sf::Vector2f direction = player.getPosition() - position;
 
-    Projectile* projectile = nullptr;
-    projectile = new ProjectileTriangle(position, velocity, sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0), feature / 256.f * 360.f);
-    projectile->shape.setScale(1, 1);
+        float length = sqrt(direction.x * direction.x + direction.y * direction.y);
+        sf::Vector2f velocity = (direction / length) * 240.f;
 
-    if (projectile != nullptr) Projectiles.push_back(projectile);
+        Projectile* projectile = new ProjectileTriangle(position, velocity, sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0), feature / 256.f * 360.f);
+        projectile->shape.setScale(3, 3);
+
+        Projectiles.push_back(projectile);
+    }
 }

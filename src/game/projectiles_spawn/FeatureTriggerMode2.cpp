@@ -4,42 +4,98 @@
 // Характерен для умеренных мелодий без явных басов
 void GameScene::FeatureTriggerMode2(float value, int feature) {
     
-    // TODO: удалить затычку и сделать реальную логику
-    
-    static bool TriggeredAlready[256] = {0};
-    if (value > 250) {
-        if (!TriggeredAlready[feature]) {
-            TriggeredAlready[feature] = 1; 
-        }
-        else {
-            return;
-        }
+    txtDebug.setString("Mode 2");
+
+    if (feature < 20) {
+        // Лазеры
+        auto projectile = new ProjectileLazer(player.getPosition(), Rotator + feature, feature == 10 ? 100 : 10, feature % 7 - 3);
+        Projectiles.push_back(projectile);
+    }
+    else if (feature < 55) {
+
+        // Прыгающие круги для ритма
+        float angleRad = (-Rotator / 50.f + feature * 2.f + 90 + (int(value) % 30 - 15) + (feature % 2) * 180) * 3.14159265f / 180.0f;
+        float distance = barrierRadius + 200.0f;
+
+        sf::Vector2f position(
+            barrierCenter.x + distance * cos(angleRad),
+            barrierCenter.y + distance * sin(angleRad)
+        );
+        sf::Vector2f positiong(
+            barrierCenter.x + distance * cos(angleRad) * 4.f,
+            barrierCenter.y + distance * sin(angleRad) * 4.f
+        );
+
+        // Направление
+        sf::Vector2f direction = (player.getPosition() + barrierCenter) * 0.5f - position;
+
+        float length = sqrt(direction.x * direction.x + direction.y * direction.y);
+        sf::Vector2f velocity = (direction / length) * 850.f;
+
+        auto projectile = new ProjectileRound(
+            position,
+            positiong,
+            velocity,
+            sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0)
+            , (feature % 20 + 6) * 2.45);
+        Projectiles.push_back(projectile);
+
+    }
+    else if (feature < 70) { // 55-69
+
+        // Шестиугольники для того, чтобы жизнь малиной не казалась
+        float y = windowHeight / 2 - (feature - 62) * 30;
+        float x = -40.f + (feature % 50) * 4.0f;
+
+        sf::Vector2f toPlayer = player.getPosition() - sf::Vector2f(x, y);
+        sf::Vector2f velocity = (toPlayer / sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y)) * 600.0f;
+
+        sf::Vector2f speed = sf::Vector2f(feature % 20 - 10 + 1200, feature % 20 + 10) * (feature / 61.0f);
+
+        Projectiles.push_back(new ProjectileHexagon(
+            sf::Vector2f(x, y),
+            (speed * 0.7f + velocity * 0.3f),
+            47.0f + (feature % 25),
+            Rotator * 4 + feature
+        ));
+    }
+    else if (feature < 120) {
+
+        // Пятиугольники для большего веселья
+        float x = windowWidth / 2 - (feature - 95) * 39;
+        float y = windowHeight - 40.f + (feature % 50) * 4.0f;
+
+        sf::Vector2f toPlayer = player.getPosition() - sf::Vector2f(x, y);
+        sf::Vector2f velocity = (toPlayer / sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y)) * 600.0f;
+
+        sf::Vector2f speed = sf::Vector2f(feature % 20 - 10, -700) * (feature / 71.0f);
+
+        Projectiles.push_back(new ProjectilePentagon(
+            sf::Vector2f(x, y),
+            (speed * 0.7f + velocity * 0.3f),
+            27.0f + (feature % 15),
+            Rotator * 4 + feature
+        ));
     }
     else {
-        TriggeredAlready[feature] = 0;
-        return; // не триггерится же
+        // Большие, красно синие
+        float angleRad = (feature / 256.f * 360.f) * 3.14159265f / 180.0f;
+        float distance = barrierRadius + 180.0f;
+
+        sf::Vector2f position(
+            barrierCenter.x + distance * cos(angleRad),
+            barrierCenter.y + distance * sin(angleRad)
+        );
+
+        // Направление
+        sf::Vector2f direction = player.getPosition() - position;
+
+        float length = sqrt(direction.x * direction.x + direction.y * direction.y);
+        sf::Vector2f velocity = (direction / length) * 240.f;
+
+        Projectile* projectile = new ProjectileTriangle(position, velocity, sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0), feature / 256.f * 360.f);
+        projectile->shape.setScale(2, 2);
+
+        Projectiles.push_back(projectile);
     }
-
-    txtDebug.setString("Mode 2"); return;
-
-    // Большие, красно синие
-    float angleRad = (feature / 256.f * 360.f) * 3.14159265f / 180.0f ;
-    float distance = barrierRadius + 180.0f;
-
-    sf::Vector2f position(
-        barrierCenter.x + distance * cos(angleRad),
-        barrierCenter.y + distance * sin(angleRad)
-    );
-
-    // Направление
-    sf::Vector2f direction = player.getPosition() - position;
-
-    float length = sqrt(direction.x * direction.x + direction.y * direction.y);
-    sf::Vector2f velocity = (direction / length) * 240.f;
-
-    Projectile* projectile = nullptr;
-    projectile = new ProjectileTriangle(position, velocity, sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0), feature / 256.f * 360.f);
-    projectile->shape.setScale(3, 3);
-
-    if (projectile != nullptr) Projectiles.push_back(projectile);
 }
