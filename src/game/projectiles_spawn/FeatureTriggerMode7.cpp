@@ -8,9 +8,8 @@ void GameScene::FeatureTriggerMode7(float value, int feature) {
 
     if (feature < 15) {
         // Массовый спавн лазеров со всех сторон
-        for (int i = 0; i < 6; i++) {
-            float angle = (feature * 60 + i * 60 + Rotator) * M_PI / 180.0f;
-            float distance = 400.0f;
+            float angle = (feature * 360 / 15 + Rotator) * M_PI / 180.0f;
+            float distance = 300.0f;
 
             sf::Vector2f pos(
                 barrierCenter.x + distance * cos(angle),
@@ -19,12 +18,11 @@ void GameScene::FeatureTriggerMode7(float value, int feature) {
 
             auto projectile = new ProjectileLazer(
                 pos,
-                (Rotator + feature * 20 + i * 60),
+                (Rotator + feature * 360 / 15),
                 8 + feature % 12,
                 feature % 10 - 5
             );
             Projectiles.push_back(projectile);
-        }
     }
     else if (feature < 40) {
         // Комбо: центр притяжения + взрывные треугольники
@@ -39,7 +37,6 @@ void GameScene::FeatureTriggerMode7(float value, int feature) {
                 barrierRadius + 50,
                 Rotator
             );
-            spiral->angleSpeed = 15.0f;
             Projectiles.push_back(spiral);
             centerSpawned = true;
         }
@@ -121,16 +118,15 @@ void GameScene::FeatureTriggerMode7(float value, int feature) {
             barrierCenter,
             sf::Color(255, 200, 0),
             12,
-            barrierRadius + 400,
+            barrierRadius + 500,
             baseAngle
         );
-        mainSpiral->angleSpeed = 20.0f;
         Projectiles.push_back(mainSpiral);
 
         // Треугольники-спутники
         for (int i = 0; i < 8; i++) {
             float angle = baseAngle + i * M_PI / 4;
-            float dist = barrierRadius + 200 + 100 * sin(feature * 0.1f + i);
+            float dist = barrierRadius + 500 + 100 * sin(feature * 0.1f + i);
 
             sf::Vector2f pos(
                 barrierCenter.x + dist * cos(angle),

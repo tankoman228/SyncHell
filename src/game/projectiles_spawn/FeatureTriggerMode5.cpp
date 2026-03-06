@@ -79,8 +79,6 @@ void GameScene::FeatureTriggerMode5(float value, int feature) {
             startRadius,
             baseAngle
         );
-        // Увеличиваем скорость вращения
-        projectile->angleSpeed = 8.0f;
         Projectiles.push_back(projectile);
     }
 }

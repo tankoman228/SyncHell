@@ -173,7 +173,7 @@ struct ProjectileSpiralMove : Projectile
     sf::Vector2f positionStart;
     float spiralRadius;
     float angleMove = 0;
-    float angleSpeed = 2;
+    float angleSpeed = 2.0;
 
     ProjectileSpiralMove(sf::Vector2f position, sf::Color color, int radius, float radiusSpiral, float angle_) {
         positionStart = position;
@@ -200,7 +200,7 @@ struct ProjectileSpiralMove : Projectile
 
     virtual void Cycle(float t) {
 
-        spiralRadius -= t * 325; // пикселей в секунду
+        spiralRadius -= t * 225; // пикселей в секунду
         angleMove += t * angleSpeed;
 
         if (spiralRadius < 30) {

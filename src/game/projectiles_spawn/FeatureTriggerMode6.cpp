@@ -4,11 +4,9 @@
 // Высокая активность, часто встречается в металле как основная
 void GameScene::FeatureTriggerMode6(float value, int feature) {
     
-    // TODO: удалить затычку и сделать реальную логику
     txtDebug.setString("Mode 6");  // TODO: ревью, написан ИИ
 
     if (feature < 20) {
-        // Зоны смерти, но полезные? Нет, опасные!
         static bool deathSpawned = false;
         if (feature == 0) deathSpawned = false;
 
