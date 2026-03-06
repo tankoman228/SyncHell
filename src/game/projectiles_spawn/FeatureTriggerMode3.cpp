@@ -1,6 +1,7 @@
 #include <Game.hpp>
 #include <EIF.hpp>
 
+// Редко встречается, несстабильна, энергии меньше среднего
 void GameScene::FeatureTriggerMode3(float value, int feature) {
 
     // TODO: удалить затычку и сделать реальную логику
@@ -19,7 +20,7 @@ void GameScene::FeatureTriggerMode3(float value, int feature) {
         return; // не триггерится же
     }
 
-    txtDebug.setString("Mode 3");
+    txtDebug.setString("Mode 3"); return;
 
     // Большие, красно синие
     float angleRad = (feature / 256.f * 360.f) * 3.14159265f / 180.0f ;

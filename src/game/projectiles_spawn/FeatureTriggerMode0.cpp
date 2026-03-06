@@ -1,6 +1,7 @@
 #include <Game.hpp>
 #include <EIF.hpp>
 
+// Характерен для тихих и ненасыщенных мелодий, звуков. Количество триггеров минимально
 void GameScene::FeatureTriggerMode0(float value, int feature) {
     
     // TODO: удалить затычку и сделать реальную логику
@@ -20,6 +21,8 @@ void GameScene::FeatureTriggerMode0(float value, int feature) {
     }
 
     txtDebug.setString("Mode 0");
+
+    return;
 
     // Большие, красно синие
     float angleRad = (feature / 256.f * 360.f) * 3.14159265f / 180.0f ;

@@ -154,24 +154,30 @@ void GameScene::Cycle(float t) {
         static double 
             ambience = 0,  // энергия из фона (не пиков)
             diversity = 0, // от количества пиков, а не их размера
-            tension = 0,   // суммарный объём пиков
             dynamics = 0,  // суммарная дельта по рецепторам за секунду
+            bass = 0,      // суммарная энергия по рецепторам баса
+            melody = 0,    // суммарная энергия поделить на энергию баса
             
             timer = 0;
         static float prev[256] = {0};
 
-        bool alreadyTriggered = false; 
+        // Мамой клянусь, код в этом блоке никто, кроме меня не писао, нейронок не использовал
+        // это мой личный говнокодик. ЧТЕНИЕ ИЛИ ПОПЫТКА ИЗМЕНИТЬ ДАННЫЙ КУСОК КОДА ОПАСНА ДЛЯ ПСИХИКИ
+
+        bool alreadyTriggered = false; // НЕ ТРОГАТЬ ЛОГИКУ ВООБЩЕ НИКАК! КОЭФФИЦИЕНТЫ ЗАНОВО ПОДГОНЯТЬ ПРИДЁТСЯ
         for (int i = 0; i < 256; i++) {
             float value = EIF::OUT_Etalon[i]; // значенеи с музыкального рецептора
 
-            if (value > 220.f) {
+            if (value > 230.f) {
                 // чтобы подсчитать количество пиков надо найти те моменты, когда есть "яркая вспышка"
                 // считаются именно очень яркие пики. Полосатость, тигринный коэффициент, его бы довести до ума
                 if (!alreadyTriggered) {
                     diversity += t * 64.f;
                     alreadyTriggered = true;
                 }
-                tension += std::sqrt(value) * t;
+
+                if (i < 64) bass += value * value * t;
+                melody += value * value * t;
             }
             else {
                 alreadyTriggered = false; 
@@ -185,88 +191,62 @@ void GameScene::Cycle(float t) {
         timer += t;
         if (timer > 1.f) {
 
+            // Нормализайция
             ambience  /= 220 * 16; 
             diversity /= 32 * 256;
-            tension   /= 16 * 256;
             dynamics  /= 256 * 128;
+            
+            melody /= bass + 256.f;
+            melody = std::sqrt(melody); // иначе в космос улетает
+            bass   /= 262144;
+            bass = std::sqrt(bass); // иначе в космос улетает
 
-            std::cout << ambience << "\t" << diversity << "\t" << tension << "\t" << dynamics << "\n";
+            // LOG
+            // std::cout << ambience << "\t" << diversity << "\t" << dynamics << "\t" << bass << "\t" << melody << "\n";
 
+            // Значимость параметра для выбора режима, коэффициенты натягивания совы на глобус
+            const float K[5] = { -8.00, -8.00, -8.00, 2.00, -2.00 }; // Считал эмпирически
+
+            // Триггер - значение, напрямую двигающая в сторону нужного режима
+            float trigger[5] = { ambience, diversity, dynamics, bass, melody }; // N :)
+            for (int i = 0; i < 5; i++) {
+                trigger[i] *= K[i];
+                trigger[i] = std::min(7.f, trigger[i]);
+                trigger[i] = std::max(0.f, trigger[i]);
+            }
+
+            // Суммируем триггерящие моменты, это уже почти токен
+            float triggerSum = 0;
+            for (int i = 0; i < 5; i++) {
+                if (trigger[i] > 1.f) triggerSum += trigger[i];
+            }
+            triggerSum = std::min(7.f, triggerSum);
+            triggerSum = std::max(0.f, triggerSum);
+
+            // стабилизирующая компонента, немного сглаживает прыжки, оттягивает от центра внимание
+            float mediator = std::pow(triggerSum / 7.f, 0.7355);
+
+            // Выбор режима
+            switch ((int)std::round(mediator * triggerSum))
+            {
+                case 0: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode0; break;
+                case 1: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode1; break;
+                case 2: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode2; break;
+                case 3: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode3; break;
+                case 4: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode4; break;
+                case 5: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode5; break;
+                case 6: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode6; break;
+                case 7: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode7; break;
+            }
+
+            // Следующая секунда тоже начинает с нуля!
             ambience = 0; 
             diversity = 0; 
-            tension = 0; 
             dynamics = 0;
+            bass = 0;
+            melody = 0;
             timer = 0;
         }
-    }
-
-    // Теперь выбираем метод, который будет квадрилион раз в секунду вызывать. Это "режим" игры, т.е. как именно снаряды будут спанвиться
-    {
-
-        //bool TEN_SMALL = tension   < (avgTension   + maxTension  ) / 2.f;
-        //bool DIV_SMALL = diversity < (avgDivercity + maxDivercity) / 2.f;
-        //bool AMB_SMALL = ambience  < (avgAmbience  + maxAmbience ) / 2.f;
-
-
-        /*
-        
-        // Режим не зависит от того, какая там мелодия, если только не совсем всё тихо. Главное - поймать дроп
-        mode += (fmaxf(0, tension    - avgTension)    / (maxTension    - avgTension))    * 33.f;
-        mode += (fmaxf(0, diversity  - avgDivercity)  / (maxDivercity  - avgDivercity))  * 33.f;
-        mode += (fmaxf(0, ambience   - avgAmbience)   / (maxAmbience   - avgAmbience))   * 34.f;
-
-        float t = mode / 100.f; // 0..1
-        float result = std::pow(t, 0.01) * 7.f; // 0..7, но возрастает иначе. Да, 1^? = 1, степень позволит снижать
-        */
-
-        switch (0) // TODO: я так и не смог придумать, как правильно выбирать режимы
-        {
-            case 0: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode0; break;
-            case 1: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode1; break;
-            case 2: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode2; break;
-            case 3: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode3; break;
-            case 4: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode4; break;
-            case 5: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode5; break; 
-            case 6: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode6; break;
-            case 7: FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode7; break;
-        }
-        /*
-        if (TEN_SMALL) {
-            if (DIV_SMALL) {
-                if (AMB_SMALL) {
-                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode0;
-                }
-                else {
-                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode1;
-                }
-            }
-            else {
-                if (AMB_SMALL) {
-                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode2;
-                }
-                else {
-                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode3;
-                }
-            }
-        }
-        else {
-            if (DIV_SMALL) {
-                if (AMB_SMALL) {
-                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode4;
-                }
-                else {
-                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode5;
-                }
-            }
-            else {
-                if (AMB_SMALL) {
-                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode6;
-                }
-                else {
-                    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode7;
-                }
-            }
-        }*/
     }
 
 
