@@ -48,7 +48,7 @@ void GameScene::FeatureTriggerMode1(float value, int feature) {
         float y = 50.0f - (feature % 50) * 4.0f;
 
         sf::Vector2f toPlayer = player.getPosition() - sf::Vector2f(x, y);
-        sf::Vector2f velocity = (toPlayer / sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y)) * 600.0f;
+        sf::Vector2f velocity = (toPlayer * float(1.f / sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y))) * 600.0f;
 
         sf::Vector2f speed = sf::Vector2f(left ? 600.0f : -600.0f, feature % 20) * (feature / 71.0f);
 

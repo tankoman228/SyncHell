@@ -34,7 +34,7 @@ void GameScene::FeatureTriggerMode5(float value, int feature) {
 
             sf::Vector2f toPlayer = player.getPosition() - position;
             float length = sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
-            sf::Vector2f velocity = (toPlayer / length) * (400.0f + feature * 2);
+            sf::Vector2f velocity = (toPlayer / length) * (200.0f + feature * 2);
 
             auto projectile = new ProjectilePentagon(
                 position,
@@ -53,7 +53,7 @@ void GameScene::FeatureTriggerMode5(float value, int feature) {
 
         sf::Vector2f toPlayer = player.getPosition() - sf::Vector2f(x, y);
         float length = sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
-        sf::Vector2f baseVelocity = (toPlayer / length) * 550.0f;
+        sf::Vector2f baseVelocity = (toPlayer / length) * 900.0f;
 
         // Добавляем горизонтальное колебание
         sf::Vector2f velocity = baseVelocity +

@@ -35,6 +35,8 @@ void GameScene::SetupLevel() {
     EIF::ClearOutput();
 
     musicDurationSeconds = music.getDuration().asSeconds();
+    FeatureTriggerCurrentMode = &GameScene::FeatureTriggerMode0; 
+
     music.play();
 
     std::cout << "setup ended\n";
@@ -46,11 +48,11 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     this->window = window_;
     switch (difficulty_)
     {
-        case 1: difficulty = 0.6; break;
-        case 2: difficulty = 0.8; break;
+        case 1: difficulty = 0.3; break;
+        case 2: difficulty = 0.7; break;
         case 3: difficulty = 1; break;
-        case 4: difficulty = 1.2; break;
-        case 5: difficulty = 1.4; break;
+        case 4: difficulty = 1.3; break;
+        case 5: difficulty = 1.7; break;
     }
 
     // загрузка музыкального файла
@@ -104,8 +106,11 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     shielbar.setFillColor(sf::Color(0, 255, 255));
 
     background.setSize(sf::Vector2f(1920, 1080));
-    shader.loadFromFile("shaders/spectro.frag", sf::Shader::Fragment);
+    shader.loadFromFile("shaders/lazer_well.frag", sf::Shader::Fragment);
     shader.setUniform("resolution", sf::Vector2f(window->getSize()));
+    
+    minTriggeredValue = 253;
+    cooldownTime = 0.6;
 }
 
 void GameScene::LoadFromFile(std::string level) {

@@ -5,7 +5,6 @@
 void GameScene::FeatureTriggerMode3(float value, int feature) {
 
     txtDebug.setString("Mode 3");
-
     
     float angleRad = (feature / 256.f * 360.f) * 3.14159265f / 180.0f;
     float distance = barrierRadius + 180.0f;

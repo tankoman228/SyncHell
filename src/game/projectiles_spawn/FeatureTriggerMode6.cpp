@@ -48,35 +48,34 @@ void GameScene::FeatureTriggerMode6(float value, int feature) {
         int sides = 8; // Восьмиугольное размещение
         float baseAngle = (feature / 256.f * 360.f) * M_PI / 180.0f;
 
-        for (int i = 0; i < sides; i++) {
-            float angle = baseAngle + (2 * M_PI * i / sides);
-            float distance = barrierRadius + 250.0f;
+        int i = feature % sides; // delete this fck cycle!
+        float angle = baseAngle + (2 * M_PI * i / sides);
+        float distance = barrierRadius + 250.0f;
 
-            sf::Vector2f position(
-                barrierCenter.x + distance * cos(angle),
-                barrierCenter.y + distance * sin(angle)
-            );
+        sf::Vector2f position(
+            barrierCenter.x + distance * cos(angle),
+            barrierCenter.y + distance * sin(angle)
+        );
 
-            sf::Vector2f direction = player.getPosition() - position;
-            float length = sqrt(direction.x * direction.x + direction.y * direction.y);
-            sf::Vector2f velocity = (direction / length) * 550.0f;
+        sf::Vector2f direction = player.getPosition() - position;
+        float length = sqrt(direction.x * direction.x + direction.y * direction.y);
+        sf::Vector2f velocity = (direction / length) * 550.0f;
 
-            // Цвет меняется в зависимости от позиции
-            sf::Color color(
-                200 + 55 * sin(angle),
-                100 + 155 * cos(angle * 2),
-                255
-            );
+        // Цвет меняется в зависимости от позиции
+        sf::Color color(
+            200 + 55 * sin(angle),
+            100 + 155 * cos(angle * 2),
+            255
+        );
 
-            auto projectile = new ProjectileTriangle(
-                position,
-                velocity,
-                color,
-                feature * 5 + i * 45
-            );
-            projectile->shape.setScale(2.5f, 2.5f);
-            Projectiles.push_back(projectile);
-        }
+        auto projectile = new ProjectileTriangle(
+            position,
+            velocity,
+            color,
+            feature * 5 + i * 45
+        );
+        projectile->shape.setScale(2.5f, 2.5f);
+        Projectiles.push_back(projectile);
     }
     else {
         // Быстрые пятиугольники с гравитационным искажением

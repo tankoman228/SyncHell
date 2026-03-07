@@ -22,13 +22,13 @@ void GameScene::ProjectilesCycle() {
             if (Projectiles[i]->damage < 0) {
                 spawnHealAura++;
                 playerShield = 64;
-                playerHealth -= Projectiles[i]->damage;
+                playerHealth -= Projectiles[i]->damage / difficulty;
                 if (playerHealth > 255) playerHealth = 255;
             }
             else 
             {
                 spawnDamageAura++;
-                playerShield -= Projectiles[i]->damage;
+                playerShield -= Projectiles[i]->damage * difficulty;
                 if (playerShield < 0) {
                     playerHealth += playerShield;
                     playerShield = 0;
