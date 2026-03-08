@@ -24,7 +24,7 @@ void GameScene::SetupLevel() {
     player.setPosition(barrierCenter);
 
     barrier = sf::CircleShape(barrierRadius);
-    barrier.setFillColor(sf::Color(0,0,0,150));
+    barrier.setFillColor(sf::Color(0,0,0,70));
     barrier.setOutlineColor(sf::Color(255,80,80));
     barrier.setOutlineThickness(2.0f);
     barrier.setOrigin(barrierRadius, barrierRadius); // Центрируем
@@ -70,6 +70,8 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     player = sf::RectangleShape(sf::Vector2f(playerSize, playerSize));
     player.setFillColor(sf::Color::Green);
     player.setOrigin(playerSize / 2, playerSize / 2); // Центрируем
+    player.setOutlineThickness(2);
+    player.setOutlineColor(sf::Color::Black);
 
     // Text
     font.loadFromFile("assets/sansation.ttf");
@@ -105,8 +107,8 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     shielbar.move(-300, barrierRadius + 150);
     shielbar.setFillColor(sf::Color(0, 255, 255));
 
-    background.setSize(sf::Vector2f(1920, 1080));
-    shader.loadFromFile("shaders/lazer_well.frag", sf::Shader::Fragment);
+    background.setSize(sf::Vector2f(windowWidth, windowHeight));
+    shader.loadFromFile("shaders/sweetheart.frag", sf::Shader::Fragment);
     shader.setUniform("resolution", sf::Vector2f(window->getSize()));
     
     minTriggeredValue = 253;
