@@ -91,8 +91,17 @@ int main()
     Levels.push_back(LevelOption("tutorial/We-Wish-You.ogg",    "Kevin MacLeod (CC BY 3.0)", true));
 
     try {
-        int i = 0;
+        std::vector<fs::directory_entry> entries;
         for (const auto& entry : fs::directory_iterator(fs::current_path() / "levels", fs::directory_options::skip_permission_denied)) {
+            if (entry.is_regular_file())  entries.push_back(entry); 
+        }
+
+        std::sort(entries.begin(), entries.end(), [](const auto& a, const auto& b) {
+            return fs::last_write_time(a) > fs::last_write_time(b);
+        });
+
+        // 3. Используем отсортированный список
+        for (const auto& entry : entries) {
             try {
                 if (entry.is_directory()) continue;
 

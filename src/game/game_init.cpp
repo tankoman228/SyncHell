@@ -108,7 +108,7 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     shielbar.setFillColor(sf::Color(0, 255, 255));
 
     background.setSize(sf::Vector2f(windowWidth, windowHeight));
-    shader.loadFromFile("shaders/flame.frag", sf::Shader::Fragment);
+    shader.loadFromFile("shaders/mandelbrot.frag", sf::Shader::Fragment);
     shader.setUniform("resolution", sf::Vector2f(window->getSize()));
     
     minTriggeredValue = 253;
