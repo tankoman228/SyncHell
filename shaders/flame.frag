@@ -7,6 +7,7 @@ uniform vec2 resolution;
 uniform float deltaTime;
 uniform float time;
 
+
 void main() {
     vec2 uv = gl_FragCoord.xy / resolution.xy;
     vec2 texel = 1.0 / resolution;
@@ -28,39 +29,54 @@ void main() {
             + top * 0.03                          // вес 0.03     
         ) 
         / 41.04;
-    
     vec4 finalColor = blurred;
 
-    // 3. Спавн "огня" из спектра
-    float h = uv.x * 4.0;
-    float t = time * 3.0;
 
-    float flameH =
-        ( sin(5.0 * h + t) + sin(2.0 * h + 2.0 * t) + sin(4.0 * h + t / 2.0)) / 3.0;
-
+    float flameH = 0.95;
     if (uv.y < flameH) {
 
-        int index = (int(uv.x * 255.0) + int(time * 4)) % 255; 
-        //index = clamp(index, 0, 255);
+        // 1. Плавная выборка из спектра по горизонтали
+        float spectrumPos = uv.x * 256.0;
         
-        float fadeFactor = 1.0 - (uv.y / flameH);
-        float energy = spectrum[index] * fadeFactor; 
+        int index1 = int(floor(spectrumPos)) % 256;
+        int index2 = int(ceil(spectrumPos)) % 256;
 
-        float r = 0.0;
-        float g = 0.0;
-        float b = 0.0;
+        // Плавная интерполяция между соседними значениями спектра
+        float spectrumValue = mix(spectrum[index1], spectrum[index2], fract(spectrumPos)); // 0..255
 
-        r = clamp(energy / 20.0, 0.0, 1.0);
-        g = clamp((energy - 20.0) / (255.0 - 20.0), 0.0, 1.0);    
+        // Шумоподавление
+        spectrumValue = (spectrumValue - 80.0) / 175.0 * 255.0;
 
-        finalColor.r = max(current.r, r);
-        finalColor.g = max(current.g, g);
+        // Нормализуем энергию (0..1)
+        float energy = spectrumValue / 255.0;
+        
+        // Вычисляем высоту пламени для этой энергии
+        // flameH - максимальная высота (при energy = 1.0)
+        flameH = mix(energy * flameH, flameH, 0.9);
+        
+        // Проверяем, попадает ли текущий пиксель в область пламени
+        // uv.y отсчитывается от 0 внизу до flameH вверху
+        if (uv.y < flameH) {
+            // Пересчитываем t относительно высоты этого языка
+            float t = 1.0 - uv.y / flameH; // 1 внизу, 0 на вершине этого языка
+            
+            // Форма языка (можно регулировать степень)
+            t = pow(t, 2.0); // Более низкие степени дают более пологие языки
+            
+            // Яркость с учётом энергии
+            float brightness = energy * t;
+            
+            // Цвет на основе яркости
+            float r = clamp(brightness * 5.0, 0.0, 1.0);
+            float g = clamp((brightness * 255.0 - 20.0) / (255.0 - 20.0), 0.0, 1.0);
+            
+            finalColor.r = mix(max(finalColor.r, r), finalColor.r, 0.5);
+            finalColor.g = mix(max(finalColor.g, g), finalColor.g, 0.5);
+        }
     }
-
-    if (uv.y > flameH + 1.0) {
-       if (finalColor.r > 0.02) { finalColor.r -= 0.02; }
-       if (finalColor.g > 0.02) { finalColor.g -= 0.02; }
-    }
+        
+    if (finalColor.r > 1.0 / 255.0) { finalColor.r -= 1.0 / 255.0; }
+    if (finalColor.g > 1.0 / 255.0) { finalColor.g -= 1.0 / 255.0; } 
 
     gl_FragColor = finalColor;
 }
