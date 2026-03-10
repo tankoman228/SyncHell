@@ -103,6 +103,7 @@
     <None Include="src\scripts\getSources.sh" />
     <None Include="assets\stf.cl" />
     <None Include="shaders\test.frag" />
+    <None Include="shaders\string_theory.frag" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="assets\sansation.ttf" />
