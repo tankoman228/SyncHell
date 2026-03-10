@@ -1,5 +1,6 @@
 #version 330
 
+// --- SYNC HELL BASIC BG SHADER PARAMETERS --- (если редактировать, то у всех сразу)
 uniform sampler2D previousTexture; 
 uniform float spectrum[256];    
 uniform vec2 resolution;
