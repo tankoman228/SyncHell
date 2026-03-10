@@ -52,7 +52,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // 3. ЦИКЛ С ПРОВЕРКОЙ ГРАНИЦЫ
     for(float i = 0.0; i < max_iter; i++) {
 
-        vec2 c_mod = c + vec2(cos(time * 0.5), sin(time * 0.5)) * 0.01;
+        vec2 c_mod = c + vec2(cos(time * 0.25) * 2.0, sin(time * 0.5) * 2.0) * 0.01;
     
         z = vec2(z.x*z.x - z.y*z.y, 2.0*z.x*z.y) + c_mod;
 
@@ -104,5 +104,5 @@ void main() {
 
     mainImage(color, gl_FragCoord.xy);
     
-    gl_FragColor = mix(color, current, 0.8);
+    gl_FragColor = mix(color, current, 0.2);
 }

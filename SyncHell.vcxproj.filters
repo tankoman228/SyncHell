@@ -104,6 +104,7 @@
     <None Include="assets\stf.cl" />
     <None Include="shaders\test.frag" />
     <None Include="shaders\string_theory.frag" />
+    <None Include="shaders\circle.frag" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="assets\sansation.ttf" />

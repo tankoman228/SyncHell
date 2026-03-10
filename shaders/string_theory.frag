@@ -7,7 +7,7 @@ uniform vec2 resolution;
 uniform float deltaTime;
 uniform float time;
 
-// Затычка для шумоподавления
+// для шумоподавления
 float denoise(float value) {
     return max(value - 190.0, 0.0) / 512.0; 
 }
@@ -33,7 +33,7 @@ void main() {
             float x = uv.x * ((j * 5.0) + 1.0) + j * -2.0;
 
             // Сумма синусоид: частота растет с j, фаза зависит от времени
-            wave += sin(x + time * -1.5 * sqrt(j)) * amp * 0.02;
+            wave += sin(x + time * -1.5 * sqrt(j)) * amp * 0.013 * sqrt(sqrt(j + 1.0));
         }
 
         // Вычисляем расстояние от текущего пикселя до кривой струны
@@ -48,7 +48,7 @@ void main() {
 
     // Смешивание с предыдущим кадром (Motion Blur / Anti-flicker)
     vec4 prevColor = texture(previousTexture, uv);
-    vec3 finalColor = mix(color, prevColor.rgb, 0.7);
+    vec3 finalColor = mix(color, prevColor.rgb, 0.3);
 
     gl_FragColor = vec4(finalColor, 1.0);
 }
