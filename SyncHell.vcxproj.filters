@@ -106,6 +106,7 @@
     <None Include="shaders\string_theory.frag" />
     <None Include="shaders\circle.frag" />
     <None Include="shaders\beehive.frag" />
+    <None Include="TODO.md" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="assets\sansation.ttf" />
