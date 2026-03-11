@@ -27,6 +27,16 @@
     <ClCompile Include="src\game\game_cycle.cpp" />
     <ClCompile Include="src\game\game_control.cpp" />
     <ClCompile Include="src\game\game_init.cpp" />
+    <ClCompile Include="src\game\projectiles\AbstractProjectile.cpp" />
+    <ClCompile Include="src\game\projectiles\ProjectileAura.cpp" />
+    <ClCompile Include="src\game\projectiles\ProjectileDeathZone.cpp" />
+    <ClCompile Include="src\game\projectiles\ProjectileHealingLazer.cpp" />
+    <ClCompile Include="src\game\projectiles\ProjectileHexagon.cpp" />
+    <ClCompile Include="src\game\projectiles\ProjectileLazer.cpp" />
+    <ClCompile Include="src\game\projectiles\ProjectilePentagon.cpp" />
+    <ClCompile Include="src\game\projectiles\ProjectileRound.cpp" />
+    <ClCompile Include="src\game\projectiles\ProjectileSpiralMove.cpp" />
+    <ClCompile Include="src\game\projectiles\ProjectileTriangle.cpp" />
     <ClCompile Include="src\game\projectiles_spawn\FeatureTriggerMode0.cpp" />
     <ClCompile Include="src\game\projectiles_spawn\FeatureTriggerMode1.cpp" />
     <ClCompile Include="src\game\projectiles_spawn\FeatureTriggerMode2.cpp" />

@@ -63,7 +63,7 @@ class GameScene
     // Векторные объекты
     sf::Vector2f barrierCenterInitial;
     sf::Vector2f barrierCenter;
-    std::vector<Projectile *> Projectiles;
+    std::vector<AbstractProjectile *> Projectiles;
     // Spectro::Spectrogram stf; временно отключено для теста EIF
     Spectro::Spectrogram spectro;
 

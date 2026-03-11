@@ -11,7 +11,7 @@ void GameScene::FeatureTriggerMode1(float value, int feature) {
         float angleRad = (-Rotator / 50.f + feature * 5.f + 90 + (int(value) % 30 - 15) + (feature % 2) * 180) * 3.14159265f / 180.0f;
         float distance = barrierRadius + 200.0f;
 
-        sf::Vector2f position(
+        sf::Vector2f start(
             barrierCenter.x + distance * cos(angleRad),
             barrierCenter.y + distance * sin(angleRad)
         );
@@ -21,24 +21,32 @@ void GameScene::FeatureTriggerMode1(float value, int feature) {
         );
 
         // Направление
-        sf::Vector2f direction = (player.getPosition() + barrierCenter) * 0.5f - position;
+        sf::Vector2f direction = (player.getPosition() + barrierCenter) * 0.5f - start;
 
         float length = sqrt(direction.x * direction.x + direction.y * direction.y);
         sf::Vector2f velocity = (direction / length) * 850.f;
 
-        auto projectile = new ProjectileRound(
-            position,
-            positiong,
-            velocity,
-            sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0)
-            , (feature % 20 + 6) * 2.45);
-        Projectiles.push_back(projectile);
+        auto projectile = new ProjectileRound();
 
+        projectile->color = sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0);
+        projectile->startPos = start;
+        projectile->gravityTargetPoint = positiong;
+        projectile->speed = velocity;
+        projectile->radius = (feature % 20 + 6) * 2.45;
+
+        projectile->Build();
+        Projectiles.push_back(projectile);
     }
     else if (feature < 70) {
 
-        // Лазеры
-        auto projectile = new ProjectileLazer(player.getPosition(), Rotator + feature, 10, feature % 7 - 3);
+        auto projectile = new ProjectileLazer();
+
+        projectile->startPos      = player.getPosition();
+        projectile->startAngleDeg = Rotator + feature;
+        projectile->rotationSpeed = feature % 7 - 3;
+        projectile->size          = 10;
+
+        projectile->Build();
         Projectiles.push_back(projectile);
     }
     else if (feature < 120) {
@@ -52,31 +60,41 @@ void GameScene::FeatureTriggerMode1(float value, int feature) {
 
         sf::Vector2f speed = sf::Vector2f(left ? 600.0f : -600.0f, feature % 20) * (feature / 71.0f);
 
-        Projectiles.push_back(new ProjectilePentagon(
-            sf::Vector2f(x, y),
-            (speed * 0.5f + velocity * 0.5f),
-            27.0f + (feature % 15),
-            Rotator * 3 + feature
-        ));
+        auto projectile = new ProjectilePentagon();
+
+        projectile->startPos = sf::Vector2f(x, y);
+        projectile->speed = speed * 0.5f + velocity * 0.5f;
+        projectile->radius = 27.0f + (feature % 15);
+        projectile->startAngleDeg = Rotator * 3 + feature;
+
+        projectile->Build();
+        Projectiles.push_back(projectile);
     }
     else {
         // Большие, красно синие
         float angleRad = (feature / 256.f * 360.f) * 3.14159265f / 180.0f;
         float distance = barrierRadius + 180.0f;
 
-        sf::Vector2f position(
+        sf::Vector2f start(
             barrierCenter.x + distance * cos(angleRad),
             barrierCenter.y + distance * sin(angleRad)
         );
 
         // Направление
-        sf::Vector2f direction = player.getPosition() - position;
+        sf::Vector2f direction = player.getPosition() - start;
 
         float length = sqrt(direction.x * direction.x + direction.y * direction.y);
         sf::Vector2f velocity = (direction / length) * 240.f;
 
-        Projectile* projectile = new ProjectileTriangle(position, velocity, sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0), feature / 256.f * 360.f);
-        projectile->shape.setScale(4, 4);
+        AbstractProjectile* projectile = new ProjectileTriangle();
+
+        projectile->startPos = start;
+        projectile->speed = velocity;
+        projectile->startAngleDeg = feature / 256.f * 360.f;
+        projectile->color = sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0);
+
+        projectile->Build();
+        projectile->shape.setScale(4.5f, 4.5f);
 
         Projectiles.push_back(projectile);
     }

@@ -19,7 +19,7 @@ void GameScene::HandleInput()
 
     // Проверяем нажатые клавиши
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ||
-        sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        sf::Keyboard::isKeyPressed(sf::Keyboard::InitFadeKoef))
     {
         playerNewC.x -= playerSpeed * dt;
     }

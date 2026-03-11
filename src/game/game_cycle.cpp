@@ -40,7 +40,7 @@ void GameScene::ProjectilesCycle() {
 
             continue;
         }
-        else if (Projectiles[i]->lifeTime < 0.3f) {
+        else if (Projectiles[i]->lifeTime < 0.3f) { 
             Projectiles[i]->shape.setOutlineThickness((0.4f - Projectiles[i]->lifeTime) * 3.f);
         }
         else Projectiles[i]->shape.setOutlineThickness(0.f);
@@ -50,10 +50,30 @@ void GameScene::ProjectilesCycle() {
 
     // Чтобы перераспределение памяти не привело к ошыбке
     for (int i = 0; i < spawnDamageAura; i++) {
-        Projectiles.push_back(new ProjectileAura(player, 255, 10, 10, 0.1f));
+
+        auto projectile = new ProjectileAura();
+
+        projectile->TargetedShape = &player;
+        projectile->R = 255;
+        projectile->G = 10;
+        projectile->B = 10;
+        projectile->InitFadeKoef = 0.1f;
+
+        projectile->Build();
+        Projectiles.push_back(projectile);
     }
     for (int i = 0; i < spawnHealAura; i++) {
-        Projectiles.push_back(new ProjectileAura(player, 10, 255, 10, 0.5f));
+
+        auto projectile = new ProjectileAura();
+
+        projectile->TargetedShape = &player;
+        projectile->R = 10;
+        projectile->G = 255;
+        projectile->B = 10;
+        projectile->InitFadeKoef = 0.5f;
+
+        projectile->Build();
+        Projectiles.push_back(projectile);
     }
 }
 
@@ -315,7 +335,12 @@ void GameScene::Cycle(float dt) {
         Vector2f RadialDir = Vector2f(-TangentDir.y, TangentDir.x);
         Vector2f ContactPoint = barrierCenter + RadialDir * Radius;
 
-        auto hl = new ProjectileHealingLazer(0.8f * ContactPoint + 0.2f * player.getPosition(), Rotator * 320.f, 8, 0);
+        auto hl = new ProjectileHealingLazer();
+
+        hl->startPos = 0.8f * ContactPoint + 0.2f * player.getPosition();
+        hl->startAngleDeg = Rotator * 320.f;
+        hl->size = 0;
+
         Projectiles.push_back(hl);
     }
 
