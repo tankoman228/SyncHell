@@ -37,14 +37,21 @@
     <ClCompile Include="src\game\projectiles_spawn\FeatureTriggerMode7.cpp" />
     <ClCompile Include="src\game\projectile_spawn.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\menu\sandbox\Cycle.cpp" />
+    <ClCompile Include="src\menu\sandbox\InitButtons.cpp" />
+    <ClCompile Include="src\menu\sandbox\InitDifficultyBlock.cpp" />
+    <ClCompile Include="src\menu\sandbox\InitLevelsCards.cpp" />
+    <ClCompile Include="src\menu\sandbox\InitLevelsList.cpp" />
+    <ClCompile Include="src\menu\sandbox\SandboxMenu.cpp" />
+    <ClCompile Include="src\menu\sandbox\TriggerSearch.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Background.hpp" />
     <ClInclude Include="include\Collide.hpp" />
     <ClInclude Include="include\Game.hpp" />
     <ClInclude Include="include\Mood.hpp" />
     <ClInclude Include="include\Projectile.hpp" />
     <ClInclude Include="include\EIF.hpp" />
+    <ClInclude Include="include\SandboxMenu.h" />
     <ClInclude Include="include\Spectro.hpp" />
     <ClInclude Include="include\STF.hpp" />
     <ClInclude Include="include\STFGram.hpp" />

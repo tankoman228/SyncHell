@@ -69,6 +69,27 @@
     <ClCompile Include="src\game\projectiles_spawn\FeatureTriggerMode7.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\menu\sandbox\InitLevelsList.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\menu\sandbox\InitButtons.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\menu\sandbox\InitDifficultyBlock.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\menu\sandbox\TriggerSearch.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\menu\sandbox\Cycle.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\menu\sandbox\SandboxMenu.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\menu\sandbox\InitLevelsCards.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Collide.hpp">
@@ -92,10 +113,10 @@
     <ClInclude Include="include\STFGram.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\Background.hpp">
+    <ClInclude Include="include\EIF.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\EIF.hpp">
+    <ClInclude Include="include\SandboxMenu.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

@@ -80,7 +80,7 @@ class GameScene
 
 public:
     /* инициализация сцены */
-    GameScene(sf::RenderWindow *window_, std::string level, int difficulty_);
+    GameScene(sf::RenderWindow *window_, std::string level, int difficulty_, std::string shader_filename);
     ~GameScene() {
         spectro.FreeMemory();
         // временно отключено для теста EIF stf.FreeMemory();
