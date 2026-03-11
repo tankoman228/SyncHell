@@ -27,6 +27,8 @@
     <ClCompile Include="src\game\game_cycle.cpp" />
     <ClCompile Include="src\game\game_control.cpp" />
     <ClCompile Include="src\game\game_init.cpp" />
+    <ClCompile Include="src\game\game_projectiles_cycle.cpp" />
+    <ClCompile Include="src\game\game_visual_cycle.cpp" />
     <ClCompile Include="src\game\projectiles\AbstractProjectile.cpp" />
     <ClCompile Include="src\game\projectiles\ProjectileAura.cpp" />
     <ClCompile Include="src\game\projectiles\ProjectileDeathZone.cpp" />

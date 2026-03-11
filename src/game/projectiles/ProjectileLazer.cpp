@@ -49,4 +49,5 @@ void ProjectileLazer::Build() {
     damage = size;
     shape.setFillColor(sf::Color::Transparent);
     isCollidable = false;
+    DoOutineFlash = false;
 }

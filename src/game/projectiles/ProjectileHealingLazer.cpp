@@ -47,5 +47,5 @@ void ProjectileHealingLazer::Build() {
     isCollidable = false;
     damage = -40;
 
-    this->speed = speed;
+    DoOutineFlash = false;
 }

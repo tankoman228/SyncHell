@@ -46,4 +46,5 @@ void ProjectileDeathZone::Build() {
     shape.setOutlineThickness(3);
 
     isCollidable = false;
+    DoOutineFlash = false;
 }

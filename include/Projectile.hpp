@@ -18,7 +18,8 @@ struct AbstractProjectile
     sf::Color       color;    // цвет заливки
     float           startAngleDeg; // только для Build!
 
-    bool isCollidable = true; // взаимодействует ли с игроком (нужна для лазеров и декоративных Projectile)
+    bool isCollidable = true;  // взаимодействует ли с игроком (нужна для лазеров и декоративных Projectile)
+    bool DoOutineFlash = true; // мигает ли обводка при появлении (для рендера, статична в рамках объекта после build)
 
     sf::ConvexShape shape;    // моделька для рендера
     float lifeTime = 0;       // сколько уже существует, при превышении PROJECTILES_LIFE_TIME игра уничтожит частицу

@@ -44,6 +44,7 @@ void ProjectileAura::Build() {
 
     damage = 0;
     isCollidable = false;
+    DoOutineFlash = false;
 
     this->speed = speed;
 }

@@ -24,4 +24,5 @@ void ProjectileHexagon::Build() {
     damage = radius / 3;
 
     AbstractProjectile::Build();
+    shape.setOutlineColor(sf::Color(0, 0, 0));
 }
