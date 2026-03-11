@@ -2,5 +2,12 @@
 
 using namespace sf;
 
-// Основная функция проверки коллизии
-bool HasCollision(sf::RectangleShape &rect, sf::ConvexShape &conv);
+namespace GameCollider {
+
+	// реинициализация позиции игрока
+	void ReinitByRectangleShape(sf::RectangleShape& rect);
+
+	// Основная функция проверки коллизии
+	bool HasCollision(sf::ConvexShape& conv, std::vector<Vector2f>& convVertices);
+}
+

@@ -25,6 +25,8 @@ struct AbstractProjectile
     float lifeTime = 0;       // сколько уже существует, при превышении PROJECTILES_LIFE_TIME игра уничтожит частицу
     int damage = 6;           // урон, наносимый игроку
 
+    std::vector<sf::Vector2f> convVerticesCache;
+
     AbstractProjectile() {} // Конструктор всегда пустой
 
     // Цикл физики (в плане перемещений и изменений параметров)
@@ -32,6 +34,8 @@ struct AbstractProjectile
 
     // Сначала задать поля из начала структуры, а потом вызывать
     virtual void Build(); 
+
+    void UpdateConvVerticesCache();
 };
 
 // Далее просто оъявления разных типов частиц. Ура, я отошёл от конструкторов вида ProjectilePentagon(sf::Vector2f position, sf::Vector2f speed, float radius, float angle_), их больше не будет!

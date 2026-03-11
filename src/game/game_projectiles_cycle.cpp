@@ -5,6 +5,8 @@ void GameScene::ProjectilesCycle() {
     int spawnDamageAura = 0;
     int spawnHealAura = 0;
 
+    GameCollider::ReinitByRectangleShape(player);
+
     for (int i = Projectiles.size() - 1; i >= 0; i--)
     {
         if (Projectiles[i]->lifeTime > PROJECTILES_LIFE_TIME)
@@ -17,9 +19,12 @@ void GameScene::ProjectilesCycle() {
             continue;
         }
 
-        else if (
+        Projectiles[i]->UpdateConvVerticesCache();
+
+        if (
             Projectiles[i]->isCollidable && 
-            HasCollision(player, Projectiles[i]->shape))
+            GameCollider::HasCollision(Projectiles[i]->shape, Projectiles[i]->convVerticesCache)
+        )
         {
             if (Projectiles[i]->damage < 0) {
                 spawnHealAura++;

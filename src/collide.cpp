@@ -7,29 +7,32 @@
 
 using namespace sf;
 
-// Спасибо DeepSeek за то, что помог с коллизией, сэкономил кучу нервов
+// Спасибо DeepSeek за то, что помог с коллизией, сэкономил кучу нервов, не спасибо за оптимизацию
 
-// Вспомогательная функция для получения вершин прямоугольника
-std::vector<Vector2f> GetRectangleVertices(const RectangleShape& rect) {
-    std::vector<Vector2f> vertices;
-    Transform transform = rect.getTransform();
-    FloatRect bounds = rect.getLocalBounds();
-    
-    vertices.push_back(transform.transformPoint(0.f, 0.f));
-    vertices.push_back(transform.transformPoint(bounds.width, 0.f));
-    vertices.push_back(transform.transformPoint(bounds.width, bounds.height));
-    vertices.push_back(transform.transformPoint(0.f, bounds.height));
-    
-    return vertices;
+sf::RectangleShape* rect;
+std::vector<Vector2f> rectVertices(4);
+
+// реинициализация позиции игрока
+void GameCollider::ReinitByRectangleShape(sf::RectangleShape& rect_) {
+
+    rect = &rect_;
+    Transform transform = rect->getTransform();
+    FloatRect bounds = rect->getLocalBounds();
+
+    rectVertices[0] = transform.transformPoint(0.f, 0.f);
+    rectVertices[1] = transform.transformPoint(bounds.width, 0.f);
+    rectVertices[2] = transform.transformPoint(bounds.width, bounds.height);
+    rectVertices[3] = transform.transformPoint(0.f, bounds.height);
 }
 
 // Вспомогательная функция для получения вершин выпуклого многоугольника
 std::vector<Vector2f> GetConvexVertices(const ConvexShape& conv) {
-    std::vector<Vector2f> vertices;
+    
+    std::vector<Vector2f> vertices(conv.getPointCount());
     Transform transform = conv.getTransform();
     
     for (size_t i = 0; i < conv.getPointCount(); ++i) {
-        vertices.push_back(transform.transformPoint(conv.getPoint(i)));
+        vertices[i] = transform.transformPoint(conv.getPoint(i));
     }
     
     return vertices;
@@ -65,15 +68,11 @@ Vector2f GetNormal(const Vector2f& p1, const Vector2f& p2) {
 }
 
 // Основная функция проверки коллизии
-bool HasCollision(RectangleShape &rect, ConvexShape &conv) {
+bool GameCollider::HasCollision(ConvexShape &conv, std::vector<Vector2f> &convVertices) {
     // Быстрая проверка по bounding box
-    if (!rect.getGlobalBounds().intersects(conv.getGlobalBounds())) {
+    if (!rect->getGlobalBounds().intersects(conv.getGlobalBounds())) {
         return false;
     }
-
-    // Получаем вершины обеих фигур
-    std::vector<Vector2f> rectVertices = GetRectangleVertices(rect);
-    std::vector<Vector2f> convVertices = GetConvexVertices(conv);
 
     // Проверяем оси прямоугольника
     for (size_t i = 0; i < rectVertices.size(); ++i) {

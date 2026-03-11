@@ -3,7 +3,7 @@
 #include <vector>
 
 // EIF - Ear Imitation Features
-// Имитация человеческого уха на звуке
+// Имитация человеческого уха на звуке (ну, уже не особо уха, значения менее сырые)
 
 #ifndef EIF_DEF
 #define EIF_DEF 1
