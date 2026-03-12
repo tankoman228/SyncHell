@@ -171,4 +171,7 @@
   <ItemGroup>
     <Font Include="assets\sansation.ttf" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="shaders\projectiles\projectile.frag" />
+  </ItemGroup>
 </Project>

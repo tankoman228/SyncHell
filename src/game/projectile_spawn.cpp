@@ -22,6 +22,8 @@ void GameScene::FeatureTrigger(float value, int feature)
 
     Rotator += dt / 256.f; // 1 градус в секунду 
 
+    //std::cout << (value - minTriggeredValue) / (255.f - minTriggeredValue) + 1.f << '\n';
+
     // сама логика спавна снаряда
     (this->*FeatureTriggerCurrentMode)(value, feature);
 }

@@ -81,6 +81,9 @@
   <ItemGroup>
     <Font Include="assets\sansation.ttf" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="shaders\projectiles\projectile.frag" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

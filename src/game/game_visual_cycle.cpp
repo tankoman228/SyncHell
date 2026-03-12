@@ -21,37 +21,39 @@ void GameScene::VisualCycle() {
     shielbar.setScale(playerShield / 64.f, 1);
 
     // фон
-    {
-        if (!buffersInitialized) {
-            auto size = window->getSize();
-            bufferA.create(size.x, size.y);
-            bufferB.create(size.x, size.y);
-            prevFrame = &bufferA;
-            nextFrame = &bufferB;
-            buffersInitialized = true;
-        }
-
-        // В цикле:
-        nextFrame->clear();
-        shader.setUniform("previousTexture", prevFrame->getTexture()); // Передаем старый кадр
-        shader.setUniformArray("spectrum", &EIF::OUT_Etalon[0], 256);
-        shader.setUniform("deltaTime", dt);
-        static float tt = 0;
-        tt += dt;
-        shader.setUniform("time", tt);
-
-        nextFrame->clear();
-        nextFrame->draw(background, &shader);
-        nextFrame->display();
-
-        sf::Sprite resultSprite(nextFrame->getTexture());
-        window->draw(resultSprite);
-
-        std::swap(prevFrame, nextFrame);
+    if (!buffersInitialized) {
+        auto size = window->getSize();
+        bufferA.create(size.x, size.y);
+        bufferB.create(size.x, size.y);
+        prevFrame = &bufferA;
+        nextFrame = &bufferB;
+        buffersInitialized = true;
     }
+
+    // В цикле:
+    nextFrame->clear();
+    shader.setUniform("previousTexture", prevFrame->getTexture()); // Передаем старый кадр
+    shader.setUniformArray("spectrum", &EIF::OUT_Etalon[0], 256);
+    shader.setUniform("deltaTime", dt);
+        
+    static float tt = 0; tt += dt;
+    shader.setUniform("time", tt);
+
+    nextFrame->clear();
+    nextFrame->draw(background, &shader);
+    nextFrame->display();
+
+    sf::Sprite resultSprite(nextFrame->getTexture());
+    window->draw(resultSprite);
+
+    std::swap(prevFrame, nextFrame);
+    
     window->draw(barrier);
 
     // снаряды
+    projectileShader.setUniform("backgroundTexture", nextFrame->getTexture());
+    projectileShader.setUniform("screenSize", sf::Glsl::Vec2(windowWidth, windowHeight));
+
     for (int i = Projectiles.size() - 1; i >= 0; i--)
     {
         if (Projectiles[i]->DoOutineFlash) {
@@ -61,7 +63,20 @@ void GameScene::VisualCycle() {
             else Projectiles[i]->shape.setOutlineThickness(0.f);
         }
 
-        window->draw(Projectiles[i]->shape);
+        if (Projectiles[i]->damage > 0 && Projectiles[i]->isCollidable) {
+            projectileShader.setUniform("projectileColor", sf::Glsl::Vec4(
+                Projectiles[i]->color.r / 255.f,
+                Projectiles[i]->color.g / 255.f,
+                Projectiles[i]->color.b / 255.f,
+                Projectiles[i]->color.a / 255.f
+            ));
+            projectileShader.setUniform("x", Projectiles[i]->shape.getPosition().x / windowWidth);
+            projectileShader.setUniform("y", Projectiles[i]->shape.getPosition().y / windowHeight);
+            projectileShader.setUniform("angleDeg", Projectiles[i]->shape.getRotation());
+
+            window->draw(Projectiles[i]->shape, &projectileShader);
+        }
+        else window->draw(Projectiles[i]->shape);
     }
 
     // счётчик FPS

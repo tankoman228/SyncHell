@@ -111,6 +111,8 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     shader.loadFromFile("shaders/" + shader_filename, sf::Shader::Fragment);
     shader.setUniform("resolution", sf::Vector2f(window->getSize()));
     
+    projectileShader.loadFromFile("shaders/projectiles/projectile.frag", sf::Shader::Fragment);
+
     minTriggeredValue = 253;
     cooldownTime = 0.6;
 }

@@ -31,6 +31,7 @@ class GameScene
     sf::Text txtDebug;
     sf::RectangleShape background;
     sf::Shader shader;
+    sf::Shader projectileShader;
 
     // Константы в рамках уровня или вообще всей игры
     const float barrierRadiusInitial = 300;
