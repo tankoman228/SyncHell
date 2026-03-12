@@ -6,7 +6,7 @@
 #include <cmath>
 
 #ifndef M_PI
-#define M_PI 3.141592
+#define M_PI 3.141592f
 #endif
 
 // Абстрактная структура снаряда
@@ -37,6 +37,10 @@ struct AbstractProjectile
 
     void UpdateConvVerticesCache();
 };
+
+// Вспомогательные функции
+sf::Vector2f Towards(const sf::Vector2f& from, const sf::Vector2f& to, float strength);
+sf::Vector2f Around(const sf::Vector2f& center, float angleDeg, float length);
 
 // Далее просто оъявления разных типов частиц. Ура, я отошёл от конструкторов вида ProjectilePentagon(sf::Vector2f position, sf::Vector2f speed, float radius, float angle_), их больше не будет!
 

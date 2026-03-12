@@ -5,7 +5,7 @@
 void GameScene::FeatureTriggerMode5(float value, int feature) {
     
     txtDebug.setString("Mode 5"); // TODO: ревью, написан ИИ
-
+    return;
     if (feature < 30) {
         // Быстрые лазеры-кресты
         for (int i = 0; i < 3; i++) {

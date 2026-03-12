@@ -42,8 +42,10 @@ void GameScene::ProjectilesCycle() {
                 }
             }
 
-            delete Projectiles[i];
-            Projectiles.erase(Projectiles.begin() + i);
+            // оптимизация: ранее было delete Projectiles[i]; Projectiles.erase(Projectiles.begin() + i);
+            std::swap(Projectiles[i], Projectiles.back());
+            delete Projectiles.back();
+            Projectiles.pop_back(); // чтобы индексы не пересчитывало
 
             continue;
         }

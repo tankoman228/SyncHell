@@ -27,6 +27,9 @@ int main()
         [&window, &scene](std::string levelName, std::string shaderName, int diff) {
             std::cout << "new GameScene\n";
             scene = new GameScene(&window, levelName, diff, shaderName);
+
+            //window.setMouseCursorVisible(0);
+            window.setMouseCursorGrabbed(0);
         }
     );
 
@@ -53,6 +56,8 @@ int main()
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
                 delete scene;
                 scene = nullptr;
+                window.setMouseCursorVisible(1);
+                window.setMouseCursorGrabbed(1);
             }
         }
         else {

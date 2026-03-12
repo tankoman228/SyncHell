@@ -20,14 +20,13 @@ float delayBeforeRestartCounter = 9999; // время до рестарта ур
 void GameScene::Cycle(float dt) {
 
     this->dt = dt;
-    HandleInput(); // WASD
 
     // Вычисляем текущий индекс и прогоняем рецепторы (реальное время)
     int rawSoundIndexEnd = std::min((long)rawSound.size() - 1, (long)(music.getPlayingOffset().asSeconds() * 44100.f));
     if (rawSoundPrevIndex < rawSoundIndexEnd) EIF::Cycle(&rawSound, rawSoundPrevIndex + 1, rawSoundIndexEnd);
     rawSoundPrevIndex = rawSoundIndexEnd;
 
-    // логика переключения режимой
+    // логика переключения режимов
     { 
         // каждую секунду накапливается энергия в этих параметрах
         static double 
@@ -245,5 +244,6 @@ void GameScene::Cycle(float dt) {
         }
     }
 
+    if (playerHealth > 0) HandleInput(); // управление, тамошний while вызывает глюки :(
     VisualCycle();
 }

@@ -9,14 +9,8 @@ void GameScene::FeatureTriggerMode3(float value, int feature) {
     float angleRad = (feature / 256.f * 360.f) * 3.14159265f / 180.0f;
     float distance = barrierRadius + 180.0f;
 
-    sf::Vector2f startPos(
-        barrierCenter.x + distance * cos(angleRad),
-        barrierCenter.y + distance * sin(angleRad)
-    );
-    sf::Vector2f direction = player.getPosition() - startPos;
-
-    float length = sqrt(direction.x * direction.x + direction.y * direction.y);
-    sf::Vector2f velocity = (direction / length) * 240.f;
+    sf::Vector2f startPos = Around(barrierCenter, (feature / 256.f * 360.f), barrierRadius + 180.0f);
+    sf::Vector2f velocity = Towards(startPos, player.getPosition(), 240);
 
     if (feature % 64 > 32) {
 

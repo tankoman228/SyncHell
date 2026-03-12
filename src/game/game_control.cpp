@@ -15,6 +15,27 @@ bool GameScene::IsInsideBarrier(const sf::Vector2f &point)
 
 void GameScene::HandleInput()
 {
+    // управление мышью
+    auto cursorPosI = sf::Mouse::getPosition(*window); // типы разные, зараза
+    auto cursorPos  = sf::Vector2f(cursorPosI.x, cursorPosI.y);
+    auto diff = player.getPosition() - cursorPos;
+    auto l = std::sqrt(diff.x * diff.x + diff.y * diff.y);
+
+    // защита от деления на 0 в Towards
+    if (l > 0.01) {
+        auto dir = Towards(player.getPosition(), cursorPos, l * dt * playerSpeed / 20.0);
+        player.move(dir);
+
+        while (!IsInsideBarrier(player.getPosition()))
+        {
+            player.move(Towards(player.getPosition(), barrierCenter, 1.0f));
+        }
+        window->setMouseCursorVisible(!IsInsideBarrier(cursorPos));
+    }
+
+    return; // Отключил, будет щя другой режим
+
+
     auto playerNewC = player.getPosition();
 
     // Проверяем нажатые клавиши
@@ -49,4 +70,5 @@ void GameScene::HandleInput()
     {
         player.setPosition(playerNewC);
     }
+    
 }

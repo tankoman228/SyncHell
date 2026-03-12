@@ -126,6 +126,9 @@
     <ClCompile Include="src\game\game_visual_cycle.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\game\projectiles\FunctionsProjectile.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Collide.hpp">

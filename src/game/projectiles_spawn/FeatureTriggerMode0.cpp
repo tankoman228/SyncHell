@@ -38,24 +38,12 @@ void GameScene::FeatureTriggerMode0(float value, int feature) {
     }
     else {
         // Красно синие
-        float angleRad = (feature / 256.f * 360.f) * 3.14159265f / 180.0f;
-        float distance = barrierRadius + 180.0f;
-
-        sf::Vector2f start(
-            barrierCenter.x + distance * cos(angleRad),
-            barrierCenter.y + distance * sin(angleRad)
-        );
-
-        // Направление
-        sf::Vector2f direction = player.getPosition() - start;
-
-        float length = sqrt(direction.x * direction.x + direction.y * direction.y);
-        sf::Vector2f velocity = (direction / length) * 240.f;
-
         AbstractProjectile* projectile = new ProjectileTriangle();
         
+        sf::Vector2f start = Around(barrierCenter, feature / 256.f * 360.f, barrierRadius + 180.0f);
+
         projectile->startPos = start;
-        projectile->speed = velocity;
+        projectile->speed = Towards(start, player.getPosition(), 240);
         projectile->startAngleDeg = feature / 256.f * 360.f;
         projectile->color = sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0);
         
