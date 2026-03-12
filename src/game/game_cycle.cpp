@@ -188,16 +188,17 @@ void GameScene::Cycle(float dt) {
         float Radius = 300.0f;
         float AngleRad = Rotator * (3.14159f / 180.0f);
 
-        Vector2f TangentDir = Vector2f(cos(AngleRad), sin(AngleRad));
-        Vector2f RadialDir = Vector2f(-TangentDir.y, TangentDir.x);
+        Vector2f TargetDir = Vector2f(cos(AngleRad), sin(AngleRad));
+        Vector2f RadialDir = Vector2f(-TargetDir.y, TargetDir.x);
         Vector2f ContactPoint = barrierCenter + RadialDir * Radius;
 
         auto hl = new ProjectileHealingLazer();
 
         hl->startPos = 0.8f * ContactPoint + 0.2f * player.getPosition();
         hl->startAngleDeg = Rotator * 320.f;
-        hl->size = 0;
+        hl->size = 10;
 
+        hl->Build();
         Projectiles.push_back(hl);
     }
 

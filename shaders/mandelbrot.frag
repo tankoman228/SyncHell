@@ -38,7 +38,7 @@ float MULTIPLEXER(int i) {
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
-    float zoom = 0.9; 
+    float zoom = 1.1; 
 
     vec2 uv = (fragCoord - 0.5 * resolution.xy) / resolution.y * zoom;
     uv += vec4(-0.1, 0.1, 0.0, 0.0).xy;  // Сдвиг, чтобы рассмотреть детали спиралей
@@ -49,7 +49,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float iter = 0.0;
     const float max_iter = 120.0; // Чем выше, тем четче края
 
-    vec2 c_mod = c + vec2(cos(time * 0.25) * 2.0, sin(time * 0.5) * 2.0) * 0.01;
+    vec2 c_mod = c + vec2(cos(time * 0.25) * 2.0, sin(time * 0.5) * 2.0) * 0.02;
 
     // 3. ЦИКЛ С ПРОВЕРКОЙ ГРАНИЦЫ
     for(float i = 0.0; i < max_iter; i++) {
