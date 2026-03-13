@@ -16,7 +16,7 @@ struct AbstractProjectile
     sf::Vector2f    speed;    // вектор движения
     sf::Vector2f    startPos; // стартовая позиция
     sf::Color       color;    // цвет заливки
-    float           startAngleDeg; // только для Build!
+    float           startAngleDeg = 0; // только для Build!
 
     bool isCollidable = true;  // взаимодействует ли с игроком (нужна для лазеров и декоративных Projectile)
     bool DoOutineFlash = true; // мигает ли обводка при появлении (для рендера, статична в рамках объекта после build)

@@ -7,6 +7,7 @@ sf::RenderTexture* nextFrame;
 bool buffersInitialized = false;
 char strFormatBuf2[64]; // ТОЛЬКО ДЛЯ ОСНОВНОГО ПОТОКА, МЕЛКИЕ СТРОКИ
 
+
 void GameScene::VisualCycle() {
 
     // барьер поля
@@ -33,7 +34,8 @@ void GameScene::VisualCycle() {
     // В цикле:
     nextFrame->clear();
     shader.setUniform("previousTexture", prevFrame->getTexture()); // Передаем старый кадр
-    shader.setUniformArray("spectrum", &EIF::OUT_Etalon[0], 256);
+    shader.setUniformArray("spectrum",    &EIF::OUT_Etalon[0], 256);
+    shader.setUniformArray("spectrumSum", &SpectrumTriggerSum[0], 256);
     shader.setUniform("deltaTime", dt);
         
     static float tt = 0; tt += dt;
@@ -50,10 +52,10 @@ void GameScene::VisualCycle() {
     
     window->draw(barrier);
 
-    // снаряды
+    // Шейдер для частиц пока не доведён до ума
     projectileShader.setUniform("backgroundTexture", nextFrame->getTexture());
-    projectileShader.setUniform("screenSize", sf::Glsl::Vec2(windowWidth, windowHeight));
 
+    // Снаряды
     for (int i = Projectiles.size() - 1; i >= 0; i--)
     {
         if (Projectiles[i]->DoOutineFlash) {
@@ -63,12 +65,13 @@ void GameScene::VisualCycle() {
             else Projectiles[i]->shape.setOutlineThickness(0.f);
         }
 
-        if (Projectiles[i]->damage > 0 && Projectiles[i]->isCollidable) {
+        // Шейдер для частиц пока не доведён до ума
+        /*if (Projectiles[i]->damage > 0 && Projectiles[i]->DoOutineFlash) {
             projectileShader.setUniform("projectileColor", sf::Glsl::Vec4(
-                Projectiles[i]->color.r / 255.f,
-                Projectiles[i]->color.g / 255.f,
-                Projectiles[i]->color.b / 255.f,
-                Projectiles[i]->color.a / 255.f
+                Projectiles[i]->shape.getFillColor().r / 255.f,
+                Projectiles[i]->shape.getFillColor().g / 255.f,
+                Projectiles[i]->shape.getFillColor().b / 255.f,
+                Projectiles[i]->shape.getFillColor().a / 255.f
             ));
             projectileShader.setUniform("x", Projectiles[i]->shape.getPosition().x / windowWidth);
             projectileShader.setUniform("y", Projectiles[i]->shape.getPosition().y / windowHeight);
@@ -76,7 +79,7 @@ void GameScene::VisualCycle() {
 
             window->draw(Projectiles[i]->shape, &projectileShader);
         }
-        else window->draw(Projectiles[i]->shape);
+        else */window->draw(Projectiles[i]->shape);
     }
 
     // счётчик FPS

@@ -2,7 +2,8 @@
 
 // --- SYNC HELL BASIC BG SHADER PARAMETERS --- (если редактировать, то у всех сразу)
 uniform sampler2D previousTexture; 
-uniform float spectrum[256]; // от 0 до 255 (нормализованные фичи звука)      
+uniform float spectrum[256]; // от 0 до 255 (нормализованные фичи звука)    
+uniform float spectrumSum[256]; 
 uniform vec2 resolution;
 uniform float deltaTime;
 uniform float time;
@@ -35,6 +36,14 @@ float MULTIPLEXER(int i) {
     return MULTIPLEXER_CACHE[i];
 }
 
+float GET_SUMSEM(int i) { // i = 0..3
+    float s = 0;
+    for (int j = 64 * i; j < 64 * (i + 1); j++) {
+        s += spectrumSum[j];
+    }
+    return s / 64.0;
+}
+
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
@@ -43,13 +52,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = (fragCoord - 0.5 * resolution.xy) / resolution.y * zoom;
     uv += vec4(-0.1, 0.1, 0.0, 0.0).xy;  // Сдвиг, чтобы рассмотреть детали спиралей
 
-    vec2 c = vec2(-0.8, 0.156);  // Julia Constant
+    vec2 c = vec2(-0.8 * cos(GET_SUMSEM(0)), 0.156 * cos(GET_SUMSEM(1)));  // Julia Constant
 
     vec2 z = uv; 
     float iter = 0.0;
     const float max_iter = 120.0; // Чем выше, тем четче края
 
-    vec2 c_mod = c + vec2(cos(time * 0.25) * 2.0, sin(time * 0.5) * 2.0) * 0.02;
+    vec2 c_mod = c + vec2(cos(GET_SUMSEM(2) * 2.25) * 2.0, sin(GET_SUMSEM(3) * 2.25) * 2.0) * 0.02;
 
     // 3. ЦИКЛ С ПРОВЕРКОЙ ГРАНИЦЫ
     for(float i = 0.0; i < max_iter; i++) {

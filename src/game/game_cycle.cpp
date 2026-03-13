@@ -23,7 +23,7 @@ void GameScene::Cycle(float dt) {
 
     // Вычисляем текущий индекс и прогоняем рецепторы (реальное время)
     int rawSoundIndexEnd = std::min((long)rawSound.size() - 1, (long)(music.getPlayingOffset().asSeconds() * 44100.f));
-    if (rawSoundPrevIndex < rawSoundIndexEnd) EIF::Cycle(&rawSound, rawSoundPrevIndex + 1, rawSoundIndexEnd);
+    if (rawSoundPrevIndex < rawSoundIndexEnd) EIF::Cycle(&rawSound, rawSoundPrevIndex + 1, rawSoundIndexEnd, dt);
     rawSoundPrevIndex = rawSoundIndexEnd;
 
     // логика переключения режимов

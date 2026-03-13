@@ -8,6 +8,8 @@ void GameScene::FeatureTrigger(float value, int feature)
 
     if (value > minTriggeredValue) {
 
+        SpectrumTriggerSum[feature] += dt; // сколько секунд суммарно было больше лимита
+
         if (TriggeredAlready[feature] <= 0) {
             TriggeredAlready[feature] = cooldownTime; // сколько перезарядка для следующего триггера           
         }

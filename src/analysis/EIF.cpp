@@ -93,7 +93,7 @@ inline void EtalonTick(float F, int i)
 /// 44.1 КГЦ, т.е. секунда звука это 44 100 элементов массива
 /// или 44 100 т.е. 176 КБ на секунду в ОЗУ
 /// </summary>
-void EIF::Cycle(std::vector<float>* waveRaw, int waveIndexStart, int waveIndexEnd) {
+void EIF::Cycle(std::vector<float>* waveRaw, int waveIndexStart, int waveIndexEnd, float dt) {
 
     for (int waveI = waveIndexStart; waveI < waveIndexEnd; waveI++) {
         
@@ -163,6 +163,15 @@ void EIF::ClearOutput() {
     for (int i = 0; i < 256; i++) {
         OUT_Deep[i] = 0;
         OUT_Etalon[i] = 0;
+
+        // стартовая фаза
+        Etalon_cos_state[i] = 1.0;
+        Etalon_sin_state[i] = 0.0;
+
+        Etalon_I[i] = 0.0;
+        Etalon_Q[i] = 0.0;
+
+        Etalon_max_cor[i] = 32;
     }
 
     for (int i = 0; i < 256 * 32; i++) { 

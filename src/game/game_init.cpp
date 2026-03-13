@@ -39,6 +39,10 @@ void GameScene::SetupLevel() {
 
     music.play();
 
+    for (int i = 0; i < 256; i++) {
+        SpectrumTriggerSum[i] = 0;
+    }
+
     std::cout << "setup ended\n";
 }
 
@@ -112,6 +116,7 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     shader.setUniform("resolution", sf::Vector2f(window->getSize()));
     
     projectileShader.loadFromFile("shaders/projectiles/projectile.frag", sf::Shader::Fragment);
+    projectileShader.setUniform("screenSize", sf::Glsl::Vec2(windowWidth, windowHeight));
 
     minTriggeredValue = 253;
     cooldownTime = 0.6;

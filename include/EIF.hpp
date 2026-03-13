@@ -11,7 +11,7 @@
 namespace EIF {
 
 	/// <summary>
-	/// маятниковые рецепторы
+	/// рецепторы мат. анализа (более не симуляция уха)
 	/// </summary>
 	extern float OUT_Etalon[256];
 
@@ -28,7 +28,7 @@ namespace EIF {
 	/// 44.1 КГЦ, т.е. секунда звука это 44 100 элементов массива
 	/// или 44 100 т.е. 176 КБ на секунду в ОЗУ
 	/// </summary>
-	void Cycle(std::vector<float>* waveRaw, int waveIndexStart, int waveIndexEnd);
+	void Cycle(std::vector<float>* waveRaw, int waveIndexStart, int waveIndexEnd, float dt);
 
 	/// <summary>
 	/// Инициализация всех весов для рецепторов

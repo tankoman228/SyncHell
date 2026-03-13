@@ -2,18 +2,23 @@
 
 // --- SYNC HELL BASIC BG SHADER PARAMETERS --- (если редактировать, то у всех сразу)
 uniform sampler2D previousTexture; 
-uniform float spectrum[256];      
+uniform float spectrum[256]; // от 0 до 255 (нормализованные фичи звука)        
+uniform float spectrumSum[256]; // <---- TODO: использоваь
 uniform vec2 resolution;
 uniform float deltaTime;
 uniform float time;
 
 const vec2 r = vec2(1.0, 1.7320508); // Отношение сторон в правильном шестиугольнике (1, sqrt(3))
 const vec2 h = r * 0.5;
+const float scale = 22.0; 
 
 void main() {
-    vec2 uv = gl_FragCoord.xy / resolution.y;
-    float scale = 22.0; 
+
+    // Честно, я не понимаю математику внутри этого пчелиного безумия, но соты рендерятся и оно работает
+
+    vec2 uv = gl_FragCoord.xy / resolution.y; 
     vec2 p = uv * scale;
+
     float aspect = resolution.x / resolution.y;
     float gridWidth = floor((aspect * scale) / r.x); 
 

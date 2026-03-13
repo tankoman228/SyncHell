@@ -56,6 +56,7 @@ class GameScene
     bool awaitingRestart = false;
     float dt = 0;
     float Rotator = 0; // вращение углов атаки спавнеров частиц
+    float SpectrumTriggerSum[256]; // сколько секунд суммарно было больше лимита
 
     // параметры режима
     float minTriggeredValue = 255;

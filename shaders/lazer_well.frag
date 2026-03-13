@@ -3,6 +3,7 @@
 // --- SYNC HELL BASIC BG SHADER PARAMETERS ---
 uniform sampler2D previousTexture;
 uniform float spectrum[256]; // от 0 до 255
+uniform float spectrumSum[256]; // <---- TODO: использоваь
 uniform vec2 resolution;
 uniform float deltaTime;
 uniform float time;
