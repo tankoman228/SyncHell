@@ -163,9 +163,9 @@
     <None Include="src\scripts\getSources.sh" />
     <None Include="assets\stf.cl" />
     <None Include="shaders\test.frag" />
-    <None Include="shaders\string_theory.frag" />
-    <None Include="shaders\circle.frag" />
-    <None Include="shaders\beehive.frag" />
+    <None Include="graphics\styles\string_theory\string_theory.frag" />
+    <None Include="graphics\styles\circle\circle.frag" />
+    <None Include="graphics\styles\beehive\beehive.frag" />
     <None Include="TODO.md" />
   </ItemGroup>
   <ItemGroup>

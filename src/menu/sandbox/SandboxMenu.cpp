@@ -32,8 +32,8 @@ SandboxMenu::SandboxMenu(sf::RenderWindow& window_, std::function<void(std::stri
 	auto shaderSelect = tgui::ComboBox::create();
 	shaderSelect->setPosition("80% + 5", "100% - 160");
 	shaderSelect->setSize("20% - 20", 20);
-	for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::current_path() / "shaders", std::filesystem::directory_options::skip_permission_denied)) {
-		if (entry.is_regular_file()) {
+	for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::current_path() / "graphics/styles", std::filesystem::directory_options::skip_permission_denied)) {
+		if (entry.is_directory()) {
 			shaderSelect->addItem(entry.path().filename().u8string());
 		}
 	}
