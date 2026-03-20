@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\analysis\EIF.cpp" />
+    <ClCompile Include="src\analysis\Equalizer.cpp" />
     <ClCompile Include="src\analysis\Spectro.cpp" />
     <ClCompile Include="src\analysis\STF.cpp" />
     <ClCompile Include="src\analysis\STFGram.cpp" />
@@ -60,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Collide.hpp" />
+    <ClInclude Include="include\Equalizer.hpp" />
     <ClInclude Include="include\Game.hpp" />
     <ClInclude Include="include\Mood.hpp" />
     <ClInclude Include="include\Projectile.hpp" />

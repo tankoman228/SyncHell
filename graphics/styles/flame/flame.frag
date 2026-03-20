@@ -72,12 +72,14 @@ void main() {
             float g = clamp((brightness * 255.0 - 20.0) / (255.0 - 20.0), 0.0, 1.0);
             
             finalColor.r = mix(max(finalColor.r, r), finalColor.r, 0.5);
-            finalColor.g = mix(max(finalColor.g, g), finalColor.g, 0.5);
+            finalColor.g = mix(max(finalColor.g, g), finalColor.g, 0.5);           
         }
     }
         
     if (finalColor.r > 1.0 / 255.0) { finalColor.r -= 1.0 / 255.0; }
     if (finalColor.g > 1.0 / 255.0) { finalColor.g -= 1.0 / 255.0; } 
+
+    finalColor.b = finalColor.b * 0.99;
 
     gl_FragColor = finalColor;
 }

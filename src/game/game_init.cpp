@@ -1,5 +1,6 @@
 #include <Game.hpp>
 #include <EIF.hpp>
+#include <Equalizer.hpp>
 
 namespace fs = std::filesystem;
 
@@ -45,79 +46,6 @@ void GameScene::SetupLevel() {
 
     std::cout << "setup ended\n";
 }
-
-
-struct Biquad {
-    float b0, b1, b2, a1, a2;
-    float z1 = 0, z2 = 0;
-
-    // Обработка одного сэмпла
-    float process(float in) {
-        float out = in * b0 + z1;
-        z1 = in * b1 + z2 - a1 * out;
-        z2 = in * b2 - a2 * out;
-        return out;
-    }
-
-    // Настройка коэффициентов для Low-Pass (Низкие частоты)
-    void setLowPass(float freq, float sampleRate) {
-        float w0 = 2 * M_PI * freq / sampleRate;
-        float cosW0 = cos(w0);
-        float alpha = sin(w0) / sqrt(2.0f); // Q = 0.707 (Butterworth)
-        float a0 = 1 + alpha;
-        b0 = (1 - cosW0) / 2 / a0;
-        b1 = (1 - cosW0) / a0;
-        b2 = (1 - cosW0) / 2 / a0;
-        a1 = -2 * cosW0 / a0;
-        a2 = (1 - alpha) / a0;
-    }
-
-    // Настройка для High-Pass (Высокие частоты)
-    void setHighPass(float freq, float sampleRate) {
-        float w0 = 2 * M_PI * freq / sampleRate;
-        float cosW0 = cos(w0);
-        float alpha = sin(w0) / sqrt(2.0f);
-        float a0 = 1 + alpha;
-        b0 = (1 + cosW0) / 2 / a0;
-        b1 = -(1 + cosW0) / a0;
-        b2 = (1 + cosW0) / 2 / a0;
-        a1 = -2 * cosW0 / a0;
-        a2 = (1 - alpha) / a0;
-    }
-};
-
-void processEqualizer(std::vector<float>& rawSound) {
-    float sampleRate = 44100.0f;
-
-    Biquad lp, hp;
-    lp.setLowPass(800.0f, sampleRate);  // Порог баса
-    hp.setHighPass(5000.0f, sampleRate); // Порог высоких
-
-    float diff = 0;
-
-    for (size_t i = 0; i < rawSound.size(); ++i) {
-        float original = rawSound[i];
-
-        // 1. Извлекаем компоненты
-        float low = lp.process(original);
-        float high = hp.process(original);
-        float mid = original - low - high; // "Остаток" — это середина
-
-        diff += std::abs(original - (low + high + mid));
-
-        // 2. Твои коэффициенты
-        low *= 0.29f;
-        mid *= 1.9f;
-        high *= 5.3f;
-
-        // 3. Собираем обратно
-        rawSound[i] = low + mid + high;
-    }
-
-    std::cout << "total diff " << diff << "\n";
-    std::cout << "avgDiff " << diff / rawSound.size() << "\n";
-}
-
 
 /* инициализация сцены */
 GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficulty_, std::string shader_filename)
