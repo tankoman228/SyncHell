@@ -24,9 +24,6 @@ const double maxFreq = 17000.0;  // Максимальная частота (и�
 const double sampleRate = 44100;
 const double movingMaxReduce = 0.99986459733; // Корень от: 100 000 * X ^ 44 100 = 256
 
-// веса для рецепторов
-std::vector<float> Etalons;
-
 // Квадратурные состояния (I/Q накопление)
 double Etalon_I[256];
 double Etalon_Q[256];
