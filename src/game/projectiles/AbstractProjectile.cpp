@@ -13,12 +13,15 @@ void AbstractProjectile::Build() {
 
     this->convVerticesCache = std::vector<sf::Vector2f>(shape.getPointCount());
 
-    // Инициализация текстуры
-    sf::Image image;
-    image.create(64, 64, sf::Color::White);
-    sf::Texture* texture = new sf::Texture();
-    texture->loadFromImage(image);
-    shape.setTexture(texture); // Теперь SFML создаст UV-сетку
+    static sf::Texture* whiteTexture = nullptr; // TODO: вынести инициализацию
+    if (whiteTexture == nullptr) {
+        sf::Image img;
+        img.create(64, 64, sf::Color::White); // Наша константа 64
+        whiteTexture = new sf::Texture();
+        whiteTexture->loadFromImage(img);
+    }
+
+    shape.setTexture(whiteTexture); // Теперь SFML создаст UV-сетку
     shape.setTextureRect(sf::IntRect(0, 0, 64, 64)); // TODO: вынести в константу куда-нибудь
 }
 

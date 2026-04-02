@@ -16,12 +16,6 @@ namespace EIF {
 	extern float OUT_Etalon[256];
 
 	/// <summary>
-	/// внутренние рецепторы
-	/// </summary>
-	extern float OUT_Deep[256];
-
-
-	/// <summary>
 	/// В переменные OUT выведет энергию с рецепторов
 	/// 
 	/// Важно, чтобы сырая волна имела разрешение 

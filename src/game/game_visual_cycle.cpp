@@ -21,7 +21,7 @@ void GameScene::VisualCycle() {
     healthbar.setScale(playerHealth / 255.f, 1);
     shielbar.setScale(playerShield / 64.f, 1);
 
-    // фон
+    // фон TODO: вынести инициализацию
     if (!buffersInitialized) {
         auto size = window->getSize();
         bufferA.create(size.x, size.y);
@@ -38,7 +38,7 @@ void GameScene::VisualCycle() {
     shader.setUniformArray("spectrumSum", &SpectrumTriggerSum[0], 256);
     shader.setUniform("deltaTime", dt);
         
-    static float tt = 0; tt += dt;
+    static float tt = 0; tt += dt; // TODO: вынести тикатель
     shader.setUniform("time", tt);
 
     nextFrame->clear();

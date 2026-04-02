@@ -68,7 +68,7 @@ void GameScene::Cycle(float dt) {
 
         timer += dt;
         if (timer > 1.f) {
-
+            // TODO: вместо магических чисел ввести файл конфигурации и проверку, экспериментально подтвердить
             // Нормализайция
             ambience  /= 220 * 16; 
             diversity /= 32 * 256;
@@ -83,7 +83,7 @@ void GameScene::Cycle(float dt) {
             // std::cout << ambience << "\t" << diversity << "\t" << dynamics << "\t" << bass << "\t" << melody << "\n";
 
             // Значимость параметра для выбора режима, коэффициенты натягивания совы на глобус
-            const float K[5] = { -8.00, -8.00, -8.00, 2.00, -2.00 }; // Считал эмпирически
+            const float K[5] = { -18.00, -18.00, -18.00, 12.00, -12.00 }; // Считал эмпирически
 
             // Триггер - значение, напрямую двигающая в сторону нужного режима
             float trigger[5] = { ambience, diversity, dynamics, bass, melody }; // N :)
