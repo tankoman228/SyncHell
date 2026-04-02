@@ -15,11 +15,11 @@ void AbstractProjectile::Build() {
 
     // Инициализация текстуры
     sf::Image image;
-    image.create(32, 32, sf::Color::White);
+    image.create(64, 64, sf::Color::White);
     sf::Texture* texture = new sf::Texture();
     texture->loadFromImage(image);
     shape.setTexture(texture); // Теперь SFML создаст UV-сетку
-    shape.setTextureRect(sf::IntRect(0, 0, 64, 64));
+    shape.setTextureRect(sf::IntRect(0, 0, 64, 64)); // TODO: вынести в константу куда-нибудь
 }
 
 void AbstractProjectile::UpdateConvVerticesCache() {

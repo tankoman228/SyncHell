@@ -9,10 +9,11 @@ uniform vec4 ColorAdditional;   // доб. по зелёному из маски
 
 uniform vec4 projectileColor;   // цветокорр из самой частицы (её личный цвет, если маска чёрная, только он)
 uniform float spectroValue;     // значение ноты от 0 до 1, для домножения при добавлении
-
 void main()
 {
-    vec4 maskColor = texture2D(mask, gl_TexCoord[0].xy / 4);
+    vec2 uv = gl_TexCoord[0].xy; 
+
+    vec4 maskColor = texture2D(mask, uv);
 
     // берём текущий
     vec4 maskResult = vec4(0);

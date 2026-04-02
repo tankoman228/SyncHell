@@ -8,12 +8,13 @@ void ProjectileTriangle::Build() {
 
         float angle = 2 * M_PI * i / 3.f - 1.5708f;
 
-        float x = 32.f * std::cos(angle);
-        float y = 32.f * std::sin(angle);
+        float x = 32.f * std::cos(angle) + 32.f;
+        float y = 32.f * std::sin(angle) + 32.f;
         shape.setPoint(i, sf::Vector2f(x, y));
     }
 
     shape.setScale(radius / 32.f, radius / 32.f);
+    shape.setOrigin(32, 32);
 
     AbstractProjectile::Build();
 }

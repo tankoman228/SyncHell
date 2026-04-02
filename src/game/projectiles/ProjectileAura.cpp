@@ -34,12 +34,13 @@ void ProjectileAura::Build() {
     // Создаем точки для круга в локальных координатах (относительно центра фигуры)
     for (int i = 0; i < 40; ++i) {
         float angle = 2 * M_PI * i / 40.f; // Полный круг 360 градусов
-        float x = radius * std::cos(angle);
-        float y = radius * std::sin(angle);
+        float x = radius * std::cos(angle) + 32.f;
+        float y = radius * std::sin(angle) + 32.f;
         shape.setPoint(i, sf::Vector2f(x, y));
     }
 
     shape.setFillColor(sf::Color::Transparent);
+    shape.setOrigin(32, 32);
     shape.setOutlineThickness(5);
 
     damage = 0;
