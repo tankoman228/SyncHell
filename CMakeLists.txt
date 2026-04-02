@@ -20,15 +20,29 @@ find_package(OpenMP REQUIRED)
 
 # Исходные файлы, получить список можно скриптом src/scripts/getSources.sh, выполнять в корне проекта: sh src/scripts/getSources.sh
 set(SOURCES
+    src/analysis/EIF.cpp
+    src/analysis/Equalizer.cpp
     src/analysis/Spectro.cpp
     src/analysis/STF.cpp
     src/analysis/STFGram.cpp
-    src/analysis/EIF.cpp
     src/collide.cpp
-    src/game/game_cycle.cpp
     src/game/game_control.cpp
+    src/game/game_cycle.cpp
     src/game/game_init.cpp
+    src/game/game_projectiles_cycle.cpp
+    src/game/game_visual_cycle.cpp
+    src/game/projectiles/AbstractProjectile.cpp
+    src/game/projectiles/FunctionsProjectile.cpp
     src/game/projectile_spawn.cpp
+    src/game/projectiles/ProjectileAura.cpp
+    src/game/projectiles/ProjectileDeathZone.cpp
+    src/game/projectiles/ProjectileHealingLazer.cpp
+    src/game/projectiles/ProjectileHexagon.cpp
+    src/game/projectiles/ProjectileLazer.cpp
+    src/game/projectiles/ProjectilePentagon.cpp
+    src/game/projectiles/ProjectileRound.cpp
+    src/game/projectiles/ProjectileSpiralMove.cpp
+    src/game/projectiles/ProjectileTriangle.cpp
     src/game/projectiles_spawn/FeatureTriggerMode0.cpp
     src/game/projectiles_spawn/FeatureTriggerMode1.cpp
     src/game/projectiles_spawn/FeatureTriggerMode2.cpp
@@ -38,6 +52,13 @@ set(SOURCES
     src/game/projectiles_spawn/FeatureTriggerMode6.cpp
     src/game/projectiles_spawn/FeatureTriggerMode7.cpp
     src/main.cpp
+    src/menu/sandbox/Cycle.cpp
+    src/menu/sandbox/InitButtons.cpp
+    src/menu/sandbox/InitDifficultyBlock.cpp
+    src/menu/sandbox/InitLevelsCards.cpp
+    src/menu/sandbox/InitLevelsList.cpp
+    src/menu/sandbox/SandboxMenu.cpp
+    src/menu/sandbox/TriggerSearch.cpp
 )
 
 # Заголовочные файлы
