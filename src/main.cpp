@@ -4,6 +4,9 @@
 
 #include "SandboxMenu.h"
 
+#include <chrono>
+using namespace std::chrono;
+
 int main()
 {
     // Инициализация модели уха
@@ -65,6 +68,29 @@ int main()
         }
 
         window.display();
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F2) && sf::Keyboard::LShift) {
+
+            // Создаем текстуру размером с окно
+            sf::Texture texture;
+            texture.create(window.getSize().x, window.getSize().y);
+
+            // Копируем содержимое активного окна в текстуру
+            texture.update(window);
+
+            auto ms = duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count();
+
+            // Сохраняем в файл
+            sf::Image screenshot = texture.copyToImage();
+            if (screenshot.saveToFile("screenshots/screenshot_" + std::to_string(ms) + ".png")) {
+                // Успешно сохранено
+            }
+            else {
+                std::cout << "Save Error of screenshot\n";
+            }
+
+            while (sf::Keyboard::isKeyPressed(sf::Keyboard::F1)) {}
+        }
     }
     
     return 0;

@@ -192,7 +192,7 @@ void GameScene::Cycle(float dt) {
         Vector2f RadialDir = Vector2f(-TargetDir.y, TargetDir.x);
         Vector2f ContactPoint = barrierCenter + RadialDir * Radius;
 
-        auto hl = new ProjectileHealingLazer();
+        auto hl = new ProjectileHealingLazer(0);
 
         hl->startPos = 0.8f * ContactPoint + 0.2f * player.getPosition();
         hl->startAngleDeg = Rotator * 320.f;

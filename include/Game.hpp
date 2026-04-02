@@ -13,6 +13,7 @@
 #include <filesystem>
 #include <Collide.hpp>
 #include <fstream>  // For file streams
+#include <ColorScheme.hpp>
 
 // Реализацию см. в src/game, тут только поля и объявления
 
@@ -76,6 +77,9 @@ class GameScene
     sf::Music music;
     //sf::Sound soundDamage; TODO: добавить
     //sf::Sound soundHeal;
+
+    // Цветовая схема уровня (зависит от стиля)
+    ColorsScheme colorsScheme; // TODO: реализовать
 
     // инициализация при начале и перерождении
     void SetupLevel();

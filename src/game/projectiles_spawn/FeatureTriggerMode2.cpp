@@ -8,7 +8,7 @@ void GameScene::FeatureTriggerMode2(float value, int feature) {
 
     if (feature < 20) {
 
-        auto projectile = new ProjectileLazer();
+        auto projectile = new ProjectileLazer(feature);
 
         projectile->startPos = player.getPosition();
         projectile->startAngleDeg = Rotator + feature * 3;
@@ -39,7 +39,7 @@ void GameScene::FeatureTriggerMode2(float value, int feature) {
         float length = sqrt(direction.x * direction.x + direction.y * direction.y);
         sf::Vector2f velocity = (direction) * (850.f / length);
 
-        auto projectile = new ProjectileRound();
+        auto projectile = new ProjectileRound(feature);
 
         projectile->color = sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0);
         projectile->startPos = st;
@@ -61,7 +61,7 @@ void GameScene::FeatureTriggerMode2(float value, int feature) {
 
         sf::Vector2f speed = sf::Vector2f(feature % 20 - 10 + 1200, feature % 20 + 10) * (feature / 61.0f);
 
-        auto projectile = new ProjectileHexagon();
+        auto projectile = new ProjectileHexagon(feature);
 
         projectile->startPos = sf::Vector2f(x, y);
         projectile->speed = (speed * 0.7f + velocity * 0.3f);
@@ -82,7 +82,7 @@ void GameScene::FeatureTriggerMode2(float value, int feature) {
 
         sf::Vector2f speed = sf::Vector2f(feature % 20 - 10, -700) * (feature / 71.0f);
 
-        auto projectile = new ProjectilePentagon();
+        auto projectile = new ProjectilePentagon(feature);
 
         projectile->startPos = sf::Vector2f(x, y);
         projectile->speed = (speed * 0.7f + velocity * 0.3f);
@@ -94,7 +94,7 @@ void GameScene::FeatureTriggerMode2(float value, int feature) {
     }
     else {
         // красно синие
-        AbstractProjectile* projectile = new ProjectileTriangle();
+        ProjectileTriangle* projectile = new ProjectileTriangle(feature);
 
         sf::Vector2f start = Around(barrierCenter, feature / 256.f * 360.f, barrierRadius + 180.0f);
 
@@ -102,10 +102,9 @@ void GameScene::FeatureTriggerMode2(float value, int feature) {
         projectile->speed = Towards(start, player.getPosition(), 240);
         projectile->startAngleDeg = feature / 256.f * 360.f;
         projectile->color = sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0);
+        projectile->radius = 8 * 4;
 
         projectile->Build();
-        projectile->shape.setScale(2.f, 2.f);
-
         Projectiles.push_back(projectile);
     }
 }

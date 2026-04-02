@@ -1,5 +1,4 @@
-# Colors of this style. Print color key and then value like in other files. RGB!
-
-main		200 10 100
-additional	10  10 250
-lazer		255 10 0
+Main       0 0 0
+Secondary  200 200 0
+Additional 200 200 0
+Lazer      255 10 0

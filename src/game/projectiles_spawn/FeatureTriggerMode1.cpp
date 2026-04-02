@@ -15,7 +15,7 @@ void GameScene::FeatureTriggerMode1(float value, int feature) {
         sf::Vector2f positiong = Around(barrierCenter, a, barrierRadius + 800.0f);
         sf::Vector2f velocity  = Towards(start, player.getPosition() * 0.3f + barrierCenter * 0.7f, 850.f);
 
-        auto projectile = new ProjectileRound();
+        auto projectile = new ProjectileRound(feature);
 
         projectile->color = sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0);
         projectile->startPos = start;
@@ -28,7 +28,7 @@ void GameScene::FeatureTriggerMode1(float value, int feature) {
     }
     else if (feature < 70) {
 
-        auto projectile = new ProjectileLazer();
+        auto projectile = new ProjectileLazer(feature);
 
         projectile->startPos      = player.getPosition();
         projectile->startAngleDeg = Rotator + feature;
@@ -49,7 +49,7 @@ void GameScene::FeatureTriggerMode1(float value, int feature) {
         sf::Vector2f velocity = (toPlayer * float(1.f / sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y))) * 600.0f;
         sf::Vector2f speed = sf::Vector2f(left ? 600.0f : -600.0f, feature % 20) * (feature / 71.0f);
 
-        auto projectile = new ProjectilePentagon();
+        auto projectile = new ProjectilePentagon(feature);
 
         projectile->startPos = sf::Vector2f(x, y);
         projectile->speed = speed * 0.5f + velocity * 0.5f;
@@ -61,17 +61,16 @@ void GameScene::FeatureTriggerMode1(float value, int feature) {
     }
     else {
         // Большие, красно синие
-        AbstractProjectile* projectile = new ProjectileTriangle();
+        ProjectileTriangle* projectile = new ProjectileTriangle(feature);
         sf::Vector2f start = Around(barrierCenter, feature / 256.f * 360.f, barrierRadius + 180.0f);
 
         projectile->startPos = start;
         projectile->speed = Towards(start, player.getPosition(), 240);;
         projectile->startAngleDeg = feature / 256.f * 360.f;
         projectile->color = sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0);
+        projectile->radius = 12 * 4;
 
         projectile->Build();
-        projectile->shape.setScale(4.5f, 4.5f);
-
         Projectiles.push_back(projectile);
     }
 }

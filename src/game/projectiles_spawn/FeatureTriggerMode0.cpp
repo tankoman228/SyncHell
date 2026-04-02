@@ -8,7 +8,7 @@ void GameScene::FeatureTriggerMode0(float value, int feature) {
 
     if (feature < 35) {
 
-        auto projectile = new ProjectileLazer();
+        auto projectile = new ProjectileLazer(feature);
 
         projectile->startPos      = player.getPosition();
         projectile->startAngleDeg = Rotator + feature;
@@ -25,7 +25,7 @@ void GameScene::FeatureTriggerMode0(float value, int feature) {
         float g = std::max((feature - 25) * 5.f, 250.f);
         int b = feature % 2 == 0 ? 128 : 255;
 
-        auto projectile = new ProjectileSpiralMove();
+        auto projectile = new ProjectileSpiralMove(feature);
 
         projectile->positionStart = barrierCenter;
         projectile->color = sf::Color(r, g, b);
@@ -38,7 +38,7 @@ void GameScene::FeatureTriggerMode0(float value, int feature) {
     }
     else {
         // Красно синие
-        AbstractProjectile* projectile = new ProjectileTriangle();
+        ProjectileTriangle* projectile = new ProjectileTriangle(feature);
         
         sf::Vector2f start = Around(barrierCenter, feature / 256.f * 360.f, barrierRadius + 180.0f);
 
@@ -46,10 +46,9 @@ void GameScene::FeatureTriggerMode0(float value, int feature) {
         projectile->speed = Towards(start, player.getPosition(), 240);
         projectile->startAngleDeg = feature / 256.f * 360.f;
         projectile->color = sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0);
-        
-        projectile->Build();
-        projectile->shape.setScale(3.5f, 3.5f);
+        projectile->radius = 8 * 4;
 
+        projectile->Build();
         Projectiles.push_back(projectile);
     }
 }

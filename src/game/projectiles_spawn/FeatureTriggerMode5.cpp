@@ -11,7 +11,7 @@ void GameScene::FeatureTriggerMode5(float value, int feature) {
         for (int i = 0; i < 3; i++) {
             float angle = Rotator + feature * 3 + i * 120;
 
-            auto projectile = new ProjectileLazer();
+            auto projectile = new ProjectileLazer(feature);
 
             projectile->startPos = player.getPosition();
             projectile->startAngleDeg = angle;
@@ -39,7 +39,7 @@ void GameScene::FeatureTriggerMode5(float value, int feature) {
             float length = sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
             sf::Vector2f velocity = (toPlayer / length) * (200.0f + feature * 2);
 
-            auto projectile = new ProjectilePentagon();
+            auto projectile = new ProjectilePentagon(feature);
 
             projectile->startPos = st;
             projectile->speed = velocity;
@@ -64,7 +64,7 @@ void GameScene::FeatureTriggerMode5(float value, int feature) {
         sf::Vector2f velocity = baseVelocity +
             sf::Vector2f(sin(feature * 0.1f) * 200.0f, 0);
 
-        auto projectile = new ProjectileHexagon();
+        auto projectile = new ProjectileHexagon(feature);
 
         projectile->startPos = sf::Vector2f(x, y);
         projectile->speed = velocity;
@@ -79,7 +79,7 @@ void GameScene::FeatureTriggerMode5(float value, int feature) {
         float baseAngle = (Rotator / 20.0f + feature * 3) * M_PI / 180.0f;
         float startRadius = barrierRadius + 100.0f;
 
-        auto projectile = new ProjectileSpiralMove();
+        auto projectile = new ProjectileSpiralMove(feature);
 
         projectile->positionStart = barrierCenter;
         projectile->color = sf::Color(255, 100 + feature % 155, 50);

@@ -13,7 +13,7 @@ void GameScene::FeatureTriggerMode4(float value, int feature) {
         else if (alreadySpawned) goto pentagons; // защита от спама зонами смерти
         alreadySpawned = 1;
 
-        auto projectile = new ProjectileDeathZone();
+        auto projectile = new ProjectileDeathZone(feature);
         projectile->startPos = player.getPosition();
         projectile->width = feature * 2 + 60;
         projectile->startAngleDeg = Rotator + feature * 10;
@@ -24,7 +24,7 @@ void GameScene::FeatureTriggerMode4(float value, int feature) {
     }
     else if (feature < 55) {
         
-        auto projectile = new ProjectileLazer();
+        auto projectile = new ProjectileLazer(feature);
 
         projectile->startPos = player.getPosition();
         projectile->startAngleDeg = Rotator + feature;
@@ -45,7 +45,7 @@ void GameScene::FeatureTriggerMode4(float value, int feature) {
 
         sf::Vector2f speed = sf::Vector2f(feature % 20 - 10 + 1200, feature % 20 + 10) * (feature / 61.0f);
 
-        auto projectile = new ProjectileHexagon();
+        auto projectile = new ProjectileHexagon(feature);
 
         projectile->startPos = sf::Vector2f(x, y);
         projectile->speed = (speed * 0.7f + velocity * 0.3f);
@@ -68,7 +68,7 @@ void GameScene::FeatureTriggerMode4(float value, int feature) {
 
         sf::Vector2f speed = sf::Vector2f(feature % 20 - 10, -700) * (feature / 71.0f);
 
-        auto projectile = new ProjectilePentagon();
+        auto projectile = new ProjectilePentagon(feature);
 
         projectile->startPos = sf::Vector2f(x, y);
         projectile->speed = speed * 0.7f + velocity * 0.3f;
@@ -94,15 +94,14 @@ void GameScene::FeatureTriggerMode4(float value, int feature) {
         float length = sqrt(direction.x * direction.x + direction.y * direction.y);
         sf::Vector2f velocity = (direction / length) * 240.f;
 
-        auto projectile = new ProjectileTriangle();
+        auto projectile = new ProjectileTriangle(feature);
         projectile->startPos = st;
         projectile->speed = velocity;
         projectile->startAngleDeg = feature / 256.f * 360.f;
         projectile->color = sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0);
-        
-        projectile->Build();
-        projectile->shape.setScale(2, 2);
+        projectile->radius = 7 * 4;
 
+        projectile->Build();
         Projectiles.push_back(projectile);
     }
 }

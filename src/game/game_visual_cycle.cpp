@@ -49,11 +49,7 @@ void GameScene::VisualCycle() {
     window->draw(resultSprite);
 
     std::swap(prevFrame, nextFrame);
-    
     window->draw(barrier);
-
-    // Шейдер для частиц пока не доведён до ума
-    projectileShader.setUniform("backgroundTexture", nextFrame->getTexture());
 
     // Снаряды
     for (int i = Projectiles.size() - 1; i >= 0; i--)
@@ -64,22 +60,24 @@ void GameScene::VisualCycle() {
             }
             else Projectiles[i]->shape.setOutlineThickness(0.f);
         }
+        
+        Projectiles[i]->featureValue = EIF::OUT_Etalon[Projectiles[i]->featureIndex];
+        // TODO: немного жмякать по scale
 
-        // Шейдер для частиц пока не доведён до ума
-        /*if (Projectiles[i]->damage > 0 && Projectiles[i]->DoOutineFlash) {
+        if (Projectiles[i]->damage > 0 && Projectiles[i]->DoOutineFlash) {        
             projectileShader.setUniform("projectileColor", sf::Glsl::Vec4(
                 Projectiles[i]->shape.getFillColor().r / 255.f,
                 Projectiles[i]->shape.getFillColor().g / 255.f,
                 Projectiles[i]->shape.getFillColor().b / 255.f,
                 Projectiles[i]->shape.getFillColor().a / 255.f
             ));
-            projectileShader.setUniform("x", Projectiles[i]->shape.getPosition().x / windowWidth);
-            projectileShader.setUniform("y", Projectiles[i]->shape.getPosition().y / windowHeight);
-            projectileShader.setUniform("angleDeg", Projectiles[i]->shape.getRotation());
+            projectileShader.setUniform("spectroValue",                 
+                std::max(Projectiles[i]->featureValue - 120.f, 0.f) / 135.f           
+            );
 
             window->draw(Projectiles[i]->shape, &projectileShader);
         }
-        else */window->draw(Projectiles[i]->shape);
+        else window->draw(Projectiles[i]->shape);
     }
 
     // счётчик FPS

@@ -48,16 +48,16 @@ void GameScene::SetupLevel() {
 }
 
 /* инициализация сцены */
-GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficulty_, std::string shader_filename)
+GameScene::GameScene(sf::RenderWindow* window_, std::string level, int difficulty_, std::string shader_filename)
 {
     this->window = window_;
     switch (difficulty_)
     {
-        case 1: difficulty = 0.3; break;
-        case 2: difficulty = 0.7; break;
-        case 3: difficulty = 1; break;
-        case 4: difficulty = 1.3; break;
-        case 5: difficulty = 1.7; break;
+    case 1: difficulty = 0.3; break;
+    case 2: difficulty = 0.7; break;
+    case 3: difficulty = 1; break;
+    case 4: difficulty = 1.3; break;
+    case 5: difficulty = 1.7; break;
     }
 
     // загрузка музыкального файла
@@ -99,27 +99,86 @@ GameScene::GameScene(sf::RenderWindow *window_, std::string level, int difficult
     Spectro::loadRawSound("levels/" + level, &rawSound);
     processEqualizer(rawSound);
 
-
     EIF::ClearOutput();
 
     SetupLevel(); // тут заиграет музыка
 
     // Остатки спрайтов, зависимых от результатов SetupLevel
-    healthbar = sf::RectangleShape(sf::Vector2f(500, 30));
-    healthbar.setPosition(barrierCenter);
-    healthbar.move(-300, barrierRadius + 100);
+    {
+        healthbar = sf::RectangleShape(sf::Vector2f(500, 30));
+        healthbar.setPosition(barrierCenter);
+        healthbar.move(-300, barrierRadius + 100);
 
-    shielbar = sf::RectangleShape(sf::Vector2f(500, 30));
-    shielbar.setPosition(barrierCenter);
-    shielbar.move(-300, barrierRadius + 150);
-    shielbar.setFillColor(sf::Color(0, 255, 255));
+        shielbar = sf::RectangleShape(sf::Vector2f(500, 30));
+        shielbar.setPosition(barrierCenter);
+        shielbar.move(-300, barrierRadius + 150);
+        shielbar.setFillColor(sf::Color(0, 255, 255));
+    }
 
-    background.setSize(sf::Vector2f(windowWidth, windowHeight));
-    shader.loadFromFile("graphics/styles/" + shader_filename + "/" + shader_filename + ".frag", sf::Shader::Fragment);
-    shader.setUniform("resolution", sf::Vector2f(window->getSize()));
-    
-    projectileShader.loadFromFile("shaders/projectiles/projectile.frag", sf::Shader::Fragment);
-    projectileShader.setUniform("screenSize", sf::Glsl::Vec2(windowWidth, windowHeight));
+    // визуализатор (фон)
+    {
+        background.setSize(sf::Vector2f(windowWidth, windowHeight));
+        shader.loadFromFile("graphics/styles/" + shader_filename + "/" + shader_filename + ".frag", sf::Shader::Fragment);
+        shader.setUniform("resolution", sf::Vector2f(window->getSize()));
+    }
+
+    // Инициализация палитры
+    {
+        std::ifstream colorsFile("graphics/styles/" + shader_filename + "/colors.sync_hell");
+        colorsScheme = ColorsScheme();
+
+        int r = 0, g = 0, b = 0;
+
+        for (int i = 0; i < 4; i++) {
+
+            std::string field = "";
+
+            colorsFile >> field;
+            colorsFile >> r;
+            colorsFile >> g;
+            colorsFile >> b;
+
+            switch (i)
+            {
+                case 0: colorsScheme.Main = sf::Color(r, g, b); break;
+                case 1: colorsScheme.Secondary = sf::Color(r, g, b); break;
+                case 2: colorsScheme.Additional = sf::Color(r, g, b); break;
+                case 3: colorsScheme.Lazer = sf::Color(r, g, b); break;                
+            }     
+        }
+
+        colorsFile.close();
+    }
+
+    // Инициализация шейдера для маски частиц
+    {
+        projectileShader.loadFromFile("shaders/projectiles/projectile.frag", sf::Shader::Fragment);
+
+        sf::Texture* mask = new sf::Texture();
+        mask->loadFromFile("graphics/styles/" + shader_filename + "/mask.png");
+        projectileShader.setUniform("mask", *mask);
+
+        projectileShader.setUniform("ColorMain", sf::Glsl::Vec4(
+            colorsScheme.Main.r / 255.f,
+            colorsScheme.Main.g / 255.f,
+            colorsScheme.Main.b / 255.f,
+            colorsScheme.Main.a / 255.f
+        ));
+
+        projectileShader.setUniform("ColorSecondary", sf::Glsl::Vec4(
+            colorsScheme.Secondary.r / 255.f,
+            colorsScheme.Secondary.g / 255.f,
+            colorsScheme.Secondary.b / 255.f,
+            colorsScheme.Secondary.a / 255.f
+        ));
+
+        projectileShader.setUniform("ColorAdditional", sf::Glsl::Vec4(
+            colorsScheme.Additional.r / 255.f,
+            colorsScheme.Additional.g / 255.f,
+            colorsScheme.Additional.b / 255.f,
+            colorsScheme.Additional.a / 255.f
+        ));
+    }
 
     minTriggeredValue = 253;
     cooldownTime = 0.6;

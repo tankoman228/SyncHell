@@ -16,7 +16,7 @@ void GameScene::FeatureTriggerMode6(float value, int feature) {
                 barrierCenter.y + (rand() % 400 - 200)
             );
 
-            auto projectile = new ProjectileDeathZone();
+            auto projectile = new ProjectileDeathZone(feature);
             projectile->startPos = spawnPos;
             projectile->width = feature * 2 + 80;
             projectile->startAngleDeg = Rotator + feature * 10;
@@ -38,7 +38,7 @@ void GameScene::FeatureTriggerMode6(float value, int feature) {
             float angle = baseAngle + i * 90;
 
             // лазеры
-            auto projectile = new ProjectileLazer();
+            auto projectile = new ProjectileLazer(feature);
 
             projectile->startPos = player.getPosition() + sf::Vector2f(50, 50);
             projectile->startAngleDeg = angle;
@@ -74,16 +74,15 @@ void GameScene::FeatureTriggerMode6(float value, int feature) {
             255
         );
 
-        AbstractProjectile* projectile = new ProjectileTriangle();
+        ProjectileTriangle* projectile = new ProjectileTriangle(feature);
 
         projectile->startPos = start;
         projectile->speed = velocity;
         projectile->startAngleDeg = feature * 5 + i * 45;
         projectile->color = color;
+        projectile->radius = 8 * 4;
 
         projectile->Build();
-        projectile->shape.setScale(2.5f, 2.5f);
-
         Projectiles.push_back(projectile);
     }
     else {
@@ -104,7 +103,7 @@ void GameScene::FeatureTriggerMode6(float value, int feature) {
         float length = sqrt(toFake.x * toFake.x + toFake.y * toFake.y);
         sf::Vector2f velocity = (toFake / length) * 700.0f;
 
-        auto projectile = new ProjectilePentagon();
+        auto projectile = new ProjectilePentagon(feature);
 
         projectile->startPos = pos;
         projectile->speed = velocity;

@@ -12,6 +12,14 @@ void AbstractProjectile::Build() {
     shape.setOutlineColor(sf::Color(240, 240, 240));
 
     this->convVerticesCache = std::vector<sf::Vector2f>(shape.getPointCount());
+
+    // Инициализация текстуры
+    sf::Image image;
+    image.create(32, 32, sf::Color::White);
+    sf::Texture* texture = new sf::Texture();
+    texture->loadFromImage(image);
+    shape.setTexture(texture); // Теперь SFML создаст UV-сетку
+    shape.setTextureRect(sf::IntRect(0, 0, 64, 64));
 }
 
 void AbstractProjectile::UpdateConvVerticesCache() {

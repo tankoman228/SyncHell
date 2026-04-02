@@ -1,24 +1,27 @@
-#version 330 core
-// Обязательно core, SFML съест
+#version 120
 
-uniform sampler2D backgroundTexture;
-uniform vec4 projectileColor;
-uniform vec2 screenSize; // <-- Добавляем размер экрана
+uniform sampler2D mask;
 
-out vec4 FragColor; // <-- SFML в 330 core требует явный out
+// цветовая гамма уровня
+uniform vec4 ColorMain;         // доб. по голубому из маски
+uniform vec4 ColorSecondary;    // доб. по красному из маски
+uniform vec4 ColorAdditional;   // доб. по зелёному из маски
+
+uniform vec4 projectileColor;   // цветокорр из самой частицы (её личный цвет, если маска чёрная, только он)
+uniform float spectroValue;     // значение ноты от 0 до 1, для домножения при добавлении
 
 void main()
 {
-    // gl_FragCoord.xy — это координаты пикселя на экране (от 0 до width/height)
-    // Переводим их в UV (от 0 до 1) для текстуры фона
-    vec2 screenUV = gl_FragCoord.xy / screenSize;
-    
-    // Берём цвет фона в ЭТОЙ точке экрана
-    vec4 bg = texture(backgroundTexture, screenUV);
-    
-    // Инвертируем
-    vec4 inverted = vec4(1.0 - bg.rgb, bg.a);
-    
-    // Смешиваем с цветом пули
-    FragColor = mix(projectileColor, inverted, 0.9);
+    vec4 maskColor = texture2D(mask, gl_TexCoord[0].xy / 4);
+
+    // берём текущий
+    vec4 maskResult = vec4(0);
+
+    // Итого маска должна покраситься в нужный цвет по вот этому вот
+    maskResult += ColorAdditional * maskColor.g * spectroValue;
+    maskResult += ColorSecondary  * maskColor.r * spectroValue;
+    maskResult += ColorMain       * maskColor.b * spectroValue;
+
+    // При тишине или чёрной маске - цвет оригинал
+    gl_FragColor = clamp(projectileColor + maskResult, 0.0, 1.0); 
 }

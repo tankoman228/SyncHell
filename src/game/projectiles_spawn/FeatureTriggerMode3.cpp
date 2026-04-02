@@ -15,20 +15,19 @@ void GameScene::FeatureTriggerMode3(float value, int feature) {
     if (feature % 64 > 32) {
 
         // большие треугольники
-        auto projectile = new ProjectileTriangle();
+        auto projectile = new ProjectileTriangle(feature);
         
         projectile->startPos = startPos;
         projectile->speed = velocity;
         projectile->color = sf::Color(feature % 2 == 0 ? 255 : 0, (feature - 100) * 10, feature % 2 == 1 ? 255 : 0);
         projectile->startAngleDeg = feature / 256.f * 360.f;
+        projectile->radius = 14 * 4;
 
         projectile->Build();
-        projectile->shape.setScale(5, 5);
-
         Projectiles.push_back(projectile);
     }
     else {
-        auto projectile = new ProjectileLazer();
+        auto projectile = new ProjectileLazer(feature);
 
         projectile->startPos = startPos;
         projectile->startAngleDeg = feature / 256.f * 360.f + 90;

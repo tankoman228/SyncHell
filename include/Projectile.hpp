@@ -24,10 +24,12 @@ struct AbstractProjectile
     sf::ConvexShape shape;    // моделька для рендера
     float lifeTime = 0;       // сколько уже существует, при превышении PROJECTILES_LIFE_TIME игра уничтожит частицу
     int damage = 6;           // урон, наносимый игроку
+    int featureIndex = 0;     // индекс фичи для визуализатора на частице
+    int featureValue = 0;     // значение фичи для визуализатора на частице, задаётся из функции рендера
 
     std::vector<sf::Vector2f> convVerticesCache;
 
-    AbstractProjectile() {} // Конструктор всегда пустой
+    AbstractProjectile(int featureIndex_) { featureIndex = featureIndex_; }
 
     // Цикл физики (в плане перемещений и изменений параметров)
     virtual void Cycle(float dt);
@@ -46,7 +48,10 @@ sf::Vector2f Around(const sf::Vector2f& center, float angleDeg, float length);
 
 struct ProjectileTriangle : AbstractProjectile
 {
+    float radius = 10;
+
     virtual void Build();
+    using AbstractProjectile::AbstractProjectile;
 };
 
 struct ProjectilePentagon : AbstractProjectile
@@ -55,6 +60,7 @@ struct ProjectilePentagon : AbstractProjectile
 
     virtual void Build();
     virtual void Cycle(float t);
+    using AbstractProjectile::AbstractProjectile;
 };
 
 struct ProjectileHexagon : AbstractProjectile
@@ -63,6 +69,7 @@ struct ProjectileHexagon : AbstractProjectile
 
     virtual void Build();
     virtual void Cycle(float t);
+    using AbstractProjectile::AbstractProjectile;
 };
 
 
@@ -74,6 +81,7 @@ struct ProjectileRound : AbstractProjectile
 
     virtual void Build();
     virtual void Cycle(float t);
+    using AbstractProjectile::AbstractProjectile;
 };
 
 struct ProjectileSpiralMove : AbstractProjectile
@@ -86,6 +94,7 @@ struct ProjectileSpiralMove : AbstractProjectile
 
     virtual void Build();
     virtual void Cycle(float t);
+    using AbstractProjectile::AbstractProjectile;
 };
 
 struct ProjectileLazer : AbstractProjectile
@@ -95,6 +104,7 @@ struct ProjectileLazer : AbstractProjectile
 
     virtual void Build();
     virtual void Cycle(float t);
+    using AbstractProjectile::AbstractProjectile;
 };
 
 // Похож на лазер
@@ -104,6 +114,7 @@ struct ProjectileDeathZone : AbstractProjectile
 
     virtual void Build();
     virtual void Cycle(float t);
+    using AbstractProjectile::AbstractProjectile;
 };
 
 struct ProjectileHealingLazer : AbstractProjectile
@@ -113,6 +124,7 @@ struct ProjectileHealingLazer : AbstractProjectile
 
     virtual void Build();
     virtual void Cycle(float t);
+    using AbstractProjectile::AbstractProjectile;
 };
 
 struct ProjectileAura : AbstractProjectile
@@ -124,6 +136,7 @@ struct ProjectileAura : AbstractProjectile
 
     virtual void Build();
     virtual void Cycle(float t);
+    using AbstractProjectile::AbstractProjectile;
 };
 
 #endif

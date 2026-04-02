@@ -56,7 +56,7 @@ void GameScene::ProjectilesCycle() {
     // Чтобы перераспределение памяти не привело к ошыбке
     for (int i = 0; i < spawnDamageAura; i++) {
 
-        auto projectile = new ProjectileAura();
+        auto projectile = new ProjectileAura(0);
 
         projectile->TargetedShape = &player;
         projectile->R = 255;
@@ -69,7 +69,7 @@ void GameScene::ProjectilesCycle() {
     }
     for (int i = 0; i < spawnHealAura; i++) {
 
-        auto projectile = new ProjectileAura();
+        auto projectile = new ProjectileAura(0);
 
         projectile->TargetedShape = &player;
         projectile->R = 10;

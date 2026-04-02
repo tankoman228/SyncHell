@@ -26,12 +26,13 @@ void ProjectilePentagon::Build() {
     // Создаем точки для круга в локальных координатах (относительно центра фигуры)
     for (int i = 0; i < 5; ++i) {
         float angle = 2 * M_PI * i / 5.f; // Полный круг 360 градусов
-        float x = radius * std::cos(angle);
-        float y = radius * std::sin(angle);
+        float x = 32.f * std::cos(angle);
+        float y = 32.f * std::sin(angle);
         shape.setPoint(i, sf::Vector2f(x, y));
     }
 
     damage = radius / 2;
+    shape.setScale(radius / 32.f, radius / 32.f);
 
     AbstractProjectile::Build();
     shape.setOutlineColor(sf::Color(0, 0, 0));
