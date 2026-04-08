@@ -1,4 +1,4 @@
-#include <Spectro.hpp>
+#include <Analysis/Spectro.hpp>
 #include <SFML/Graphics.hpp>
 
 namespace STF {

@@ -1,6 +1,6 @@
-#include <Game.hpp>
-#include <EIF.hpp>
-#include <Equalizer.hpp>
+#include <Game/Game.hpp>
+#include <Analysis/EIF.hpp>
+#include <Analysis/Splitter.hpp>
 
 namespace fs = std::filesystem;
 

@@ -1,4 +1,4 @@
-#include "SandboxMenu.h"
+#include "UI/SandboxMenu.h"
 
 void SandboxMenu::InitButtons() {
 

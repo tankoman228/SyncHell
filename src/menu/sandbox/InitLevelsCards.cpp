@@ -1,4 +1,4 @@
-#include "SandboxMenu.h"
+#include "UI/SandboxMenu.h"
 
 #include <TGUI/Widgets/Group.hpp>
 #include <TGUI/Widgets/Panel.hpp>

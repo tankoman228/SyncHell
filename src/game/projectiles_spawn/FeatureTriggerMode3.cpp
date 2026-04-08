@@ -1,5 +1,5 @@
-#include <Game.hpp>
-#include <EIF.hpp>
+#include <Game/Game.hpp>
+#include <Analysis/EIF.hpp>
 
 // Редко встречается, нестабильна, энергии меньше среднего
 void GameScene::FeatureTriggerMode3(float value, int feature) {

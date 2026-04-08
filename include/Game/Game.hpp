@@ -3,17 +3,20 @@
 
 #define PROJECTILES_LIFE_TIME 4
 
-#include <SFML/Audio.hpp>
-#include <Projectile.hpp>
-#include <Spectro.hpp>
-#include <STF.hpp>
-#include <STFGram.hpp>
 #include <iostream>
 #include <algorithm> 
 #include <filesystem>
-#include <Collide.hpp>
-#include <fstream>  // For file streams
-#include <ColorScheme.hpp>
+#include <fstream> 
+
+#include <SFML/Audio.hpp>
+
+#include <Game/Projectile.hpp>
+#include <Game/Collide.hpp>
+#include <Game/ColorScheme.hpp>
+
+#include <Analysis/Spectro.hpp>
+#include <Analysis/STF.hpp>
+#include <Analysis/STFGram.hpp>
 
 // Реализацию см. в src/game, тут только поля и объявления
 

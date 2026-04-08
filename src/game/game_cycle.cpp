@@ -1,5 +1,5 @@
-#include <Game.hpp>
-#include <EIF.hpp>
+#include <Game/Game.hpp>
+#include <Analysis/EIF.hpp>
 
 char strFormatBuf[64]; // ТОЛЬКО ДЛЯ ОСНОВНОГО ПОТОКА, МЕЛКИЕ СТРОКИ
 

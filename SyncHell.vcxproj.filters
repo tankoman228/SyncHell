@@ -129,42 +129,42 @@
     <ClCompile Include="src\game\projectiles\FunctionsProjectile.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\analysis\Equalizer.cpp">
+    <ClCompile Include="src\analysis\Splitter.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Collide.hpp">
+    <ClInclude Include="include\Game\Collide.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\Game.hpp">
+    <ClInclude Include="include\Game\Game.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\Mood.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\Projectile.hpp">
+    <ClInclude Include="include\Game\Projectile.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\Spectro.hpp">
+    <ClInclude Include="include\Analysis\Spectro.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\STF.hpp">
+    <ClInclude Include="include\Analysis\STF.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\STFGram.hpp">
+    <ClInclude Include="include\Analysis\STFGram.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\EIF.hpp">
+    <ClInclude Include="include\Analysis\EIF.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\SandboxMenu.h">
+    <ClInclude Include="include\UI\SandboxMenu.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\Equalizer.hpp">
+    <ClInclude Include="include\Analysis\Splitter.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\ColorScheme.hpp">
+    <ClInclude Include="include\Game\ColorScheme.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

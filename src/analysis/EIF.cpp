@@ -1,4 +1,4 @@
-#include "EIF.hpp"
+#include "Analysis/EIF.hpp"
 #include <iostream>
 #include <cmath>
 

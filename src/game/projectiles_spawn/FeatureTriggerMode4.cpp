@@ -1,5 +1,5 @@
-#include <Game.hpp>
-#include <EIF.hpp>
+#include <Game/Game.hpp>
+#include <Analysis/EIF.hpp>
 
 // Активность средняя, есть и басы, и другое. Умеренный шум
 void GameScene::FeatureTriggerMode4(float value, int feature) {

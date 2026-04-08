@@ -1,8 +1,8 @@
 #include <SFML/Graphics.hpp>
-#include <Game.hpp>
-#include <EIF.hpp> 
+#include <Game/Game.hpp>
+#include <Analysis/EIF.hpp> 
 
-#include "SandboxMenu.h"
+#include "UI/SandboxMenu.h"
 
 #include <chrono>
 using namespace std::chrono;

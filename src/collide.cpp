@@ -3,7 +3,7 @@
 #include <vector>
 #include <limits>
 #include <algorithm>
-#include <Collide.hpp>
+#include <Game/Collide.hpp>
 
 using namespace sf;
 

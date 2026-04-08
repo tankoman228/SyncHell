@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <omp.h>
 #include <iostream>
-#include <Spectro.hpp>
+#include <Analysis/Spectro.hpp>
 
 namespace Spectro {
 

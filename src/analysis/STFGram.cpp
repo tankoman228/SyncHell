@@ -1,4 +1,4 @@
-#include <STFGram.hpp>
+#include <Analysis/STFGram.hpp>
 #include <iostream>
 
 namespace STF {

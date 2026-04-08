@@ -1,5 +1,5 @@
-#include <Game.hpp>
-#include <EIF.hpp>
+#include <Game/Game.hpp>
+#include <Analysis/EIF.hpp>
 
 // Активность выше среднего, басов хватает
 void GameScene::FeatureTriggerMode5(float value, int feature) {

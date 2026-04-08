@@ -1,4 +1,4 @@
-#include "Projectile.hpp"
+#include "Game/Projectile.hpp"
 
 void ProjectileHealingLazer::Cycle(float dt) {
 

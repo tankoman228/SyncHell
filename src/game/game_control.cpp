@@ -1,4 +1,4 @@
-#include <Game.hpp>
+#include <Game/Game.hpp>
 
 bool GameScene::IsInsideBarrier(const sf::Vector2f &point)
 {

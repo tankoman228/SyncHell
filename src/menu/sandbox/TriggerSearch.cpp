@@ -1,4 +1,4 @@
-#include "SandboxMenu.h"
+#include "UI/SandboxMenu.h"
 
 void SandboxMenu::TriggerSearch() {
     std::vector<std::pair<tgui::Panel::Ptr, bool>> widgetStates;

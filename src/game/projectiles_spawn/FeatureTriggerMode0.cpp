@@ -1,5 +1,5 @@
-#include <Game.hpp>
-#include <EIF.hpp>
+#include <Game/Game.hpp>
+#include <Analysis/EIF.hpp>
 
 // Характерен для тихих и ненасыщенных мелодий, звуков. Количество триггеров минимально
 void GameScene::FeatureTriggerMode0(float value, int feature) {

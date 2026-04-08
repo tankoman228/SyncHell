@@ -4,7 +4,7 @@
 #include <string>
 #include <sstream>  // For efficient reading into a string
 #include <CL/cl.h>
-#include <Spectro.hpp>
+#include <Analysis/Spectro.hpp>
 #include <algorithm>  
 
 namespace STF {

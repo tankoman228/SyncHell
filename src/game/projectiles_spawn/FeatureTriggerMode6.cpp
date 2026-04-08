@@ -1,5 +1,5 @@
-#include <Game.hpp>
-#include <EIF.hpp>
+#include <Game/Game.hpp>
+#include <Analysis/EIF.hpp>
 
 // Высокая активность, часто встречается в металле как основная
 void GameScene::FeatureTriggerMode6(float value, int feature) {

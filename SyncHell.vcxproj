@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\analysis\EIF.cpp" />
-    <ClCompile Include="src\analysis\Equalizer.cpp" />
+    <ClCompile Include="src\analysis\Splitter.cpp" />
     <ClCompile Include="src\analysis\Spectro.cpp" />
     <ClCompile Include="src\analysis\STF.cpp" />
     <ClCompile Include="src\analysis\STFGram.cpp" />
@@ -60,17 +60,17 @@
     <ClCompile Include="src\menu\sandbox\TriggerSearch.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Collide.hpp" />
-    <ClInclude Include="include\ColorScheme.hpp" />
-    <ClInclude Include="include\Equalizer.hpp" />
-    <ClInclude Include="include\Game.hpp" />
+    <ClInclude Include="include\Game\Collide.hpp" />
+    <ClInclude Include="include\Game\ColorScheme.hpp" />
+    <ClInclude Include="include\Analysis\Splitter.hpp" />
+    <ClInclude Include="include\Game\Game.hpp" />
     <ClInclude Include="include\Mood.hpp" />
-    <ClInclude Include="include\Projectile.hpp" />
-    <ClInclude Include="include\EIF.hpp" />
-    <ClInclude Include="include\SandboxMenu.h" />
-    <ClInclude Include="include\Spectro.hpp" />
-    <ClInclude Include="include\STF.hpp" />
-    <ClInclude Include="include\STFGram.hpp" />
+    <ClInclude Include="include\Game\Projectile.hpp" />
+    <ClInclude Include="include\Analysis\EIF.hpp" />
+    <ClInclude Include="include\UI\SandboxMenu.h" />
+    <ClInclude Include="include\Analysis\Spectro.hpp" />
+    <ClInclude Include="include\Analysis\STF.hpp" />
+    <ClInclude Include="include\Analysis\STFGram.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\stf.cl" />

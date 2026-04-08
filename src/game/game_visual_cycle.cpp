@@ -1,5 +1,5 @@
-#include <Game.hpp>
-#include <EIF.hpp>
+#include <Game/Game.hpp>
+#include <Analysis/EIF.hpp>
 
 sf::RenderTexture bufferA, bufferB;
 sf::RenderTexture* prevFrame;

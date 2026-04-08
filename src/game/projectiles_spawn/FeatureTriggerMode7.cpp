@@ -1,5 +1,5 @@
-#include <Game.hpp>
-#include <EIF.hpp>
+#include <Game/Game.hpp>
+#include <Analysis/EIF.hpp>
 
 // Пики активности, часто встречается в металле
 void GameScene::FeatureTriggerMode7(float value, int feature) {

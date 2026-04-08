@@ -3,7 +3,7 @@
 #ifndef STF_define
 #define STF_define
 
-#include <Spectro.hpp>
+#include <Analysis/Spectro.hpp>
 
 namespace STF {
 

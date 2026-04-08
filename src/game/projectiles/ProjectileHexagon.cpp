@@ -1,4 +1,4 @@
-#include "Projectile.hpp"
+#include "Game/Projectile.hpp"
 
 void ProjectileHexagon::Cycle(float dt) {
     shape.setFillColor(sf::Color(255, 255 - lifeTime * 50, 255 - lifeTime * 50));

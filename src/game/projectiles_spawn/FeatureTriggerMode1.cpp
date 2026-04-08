@@ -1,5 +1,5 @@
-#include <Game.hpp>
-#include <EIF.hpp>
+#include <Game/Game.hpp>
+#include <Analysis/EIF.hpp>
 
 // Характерен для умеренных мелодий без басов
 void GameScene::FeatureTriggerMode1(float value, int feature) {

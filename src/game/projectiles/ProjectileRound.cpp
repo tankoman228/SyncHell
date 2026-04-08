@@ -1,4 +1,4 @@
-#include "Projectile.hpp"
+#include "Game/Projectile.hpp"
 
 void ProjectileRound::Cycle(float dt) {
     shape.move(speed * dt);

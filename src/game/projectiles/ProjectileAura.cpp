@@ -1,4 +1,4 @@
-#include "Projectile.hpp"
+#include "Game/Projectile.hpp"
 
 void ProjectileAura::Cycle(float dt) {
     shape.setOutlineThickness(3);
